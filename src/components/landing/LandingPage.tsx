@@ -373,7 +373,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => applyPreset(selectedRole)}
               className="text-[11px] text-white/40 hover:text-emerald-300 font-mono transition inline-flex items-center space-x-1"
             >
-              <span>⚡ Use demo credentials</span>
+              <span>⚡ Quick-fill sample credentials</span>
             </button>
           </div>
         </div>

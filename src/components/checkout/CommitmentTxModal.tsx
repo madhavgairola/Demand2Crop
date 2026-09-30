@@ -306,7 +306,7 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
 
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
                 <span className="text-slate-500 dark:text-slate-400">Buyer:</span>
-                <span className="text-slate-900 dark:text-white">Demo Buyer (You)</span>
+                <span className="text-slate-900 dark:text-white">Authorized Buyer (You)</span>
               </div>
 
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">

@@ -118,7 +118,7 @@ export const LogisticsView: React.FC = () => {
               <span>Interactive Feasibility & Freight Pricing Simulator</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Test how crop perishability constraints dynamically govern marketplace availability.
+              Crop perishability constraints dynamically govern marketplace availability and routing feasibility.
             </p>
           </div>
 

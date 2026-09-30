@@ -168,7 +168,7 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
         {/* Footer Actions */}
         <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
-            {lang === 'hi' ? 'कृषि में मौसम जोखिम का पारदर्शी व सुरक्षित समाधान' : 'Demonstrates real-world agricultural risk governance'}
+            {lang === 'hi' ? 'कृषि में मौसम जोखिम का पारदर्शी व सुरक्षित समाधान' : 'Automated smart contract risk governance & fair settlement'}
           </span>
           <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
             <button
