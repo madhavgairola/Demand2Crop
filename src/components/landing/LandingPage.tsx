@@ -164,99 +164,89 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* HERO SECTION WITH CENTERED TRANSLUCENT AUTH CARD */}
-      <section className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col items-center justify-center text-center space-y-8">
-        {/* Core Tagline & Title */}
-        <div className="space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-300 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="tracking-wide uppercase text-[11px] font-bold">Plan Before You Plant</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
-            Grow Against Committed Demand.
+      <section className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-14 flex flex-col items-center justify-center text-center space-y-6">
+        {/* Sole Prominent Tagline as Requested */}
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
+            Plan before you plant.
           </h1>
-
-          <p className="text-sm sm:text-base text-slate-200 font-medium max-w-lg mx-auto leading-relaxed">
-            Eliminate crop distress selling, predatory informal credit, and post-harvest spoilage. Connect farmers directly to buyers through smart contract escrow.
-          </p>
         </div>
 
         {/* CENTERED TRANSLUCENT FROSTED GLASS LOGIN / SIGNUP CARD */}
-        <div className="w-full max-w-md mx-auto bg-slate-950/70 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-left">
-          {/* Header Switcher: Sign In vs Sign Up */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
-            <div>
-              <h2 className="text-lg font-bold text-white">
-                {authMode === 'LOGIN' ? 'Sign In to Account' : 'Create New Account'}
-              </h2>
-              <p className="text-xs text-slate-400">
-                {authMode === 'LOGIN' ? 'Access your forward contracts & orders' : 'Join the demand-driven agricultural network'}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setAuthMode(authMode === 'LOGIN' ? 'SIGNUP' : 'LOGIN')}
-              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition"
-            >
-              {authMode === 'LOGIN' ? 'Create Account' : 'Already registered?'}
-            </button>
-          </div>
-
+        <div className="w-full max-w-md mx-auto bg-slate-950/65 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-left ring-1 ring-emerald-500/20 transition-all duration-200">
           {/* Role Segmented Tabs (Farmer / Buyer / Admin) */}
-          <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-              Select Portal Role
-            </label>
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-white/5 rounded-2xl border border-white/10">
+          <div className="space-y-1.5">
+            <div className="grid grid-cols-3 p-1.5 bg-black/40 rounded-2xl border border-white/10">
               <button
                 type="button"
                 onClick={() => applyPreset('FARMER')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'FARMER'
-                    ? 'bg-emerald-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <Sprout className="w-3.5 h-3.5" />
+                <Sprout className="w-4 h-4" />
                 <span>Farmer</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => applyPreset('BUYER')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'BUYER'
-                    ? 'bg-emerald-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <ShoppingBag className="w-3.5 h-3.5" />
+                <ShoppingBag className="w-4 h-4" />
                 <span>Buyer</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => applyPreset('ADMIN')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'ADMIN'
-                    ? 'bg-emerald-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
+                    : 'text-slate-300 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
+                <ShieldCheck className="w-4 h-4" />
                 <span>Admin</span>
               </button>
             </div>
+          </div>
+
+          {/* Card Header & Mode Switch */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-0.5">
+                {selectedRole === 'FARMER' && '🌾 Sovereign Producer Portal'}
+                {selectedRole === 'BUYER' && '🛒 Consumer & Bistro Portal'}
+                {selectedRole === 'ADMIN' && '🛡️ Protocol Auditor Console'}
+              </span>
+              <h2 className="text-lg font-bold text-white">
+                {authMode === 'LOGIN' ? 'Sign In' : 'Create Account'}
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setAuthMode(authMode === 'LOGIN' ? 'SIGNUP' : 'LOGIN')}
+              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
+            >
+              {authMode === 'LOGIN' ? 'Register' : 'Sign In'}
+            </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleAuthSubmit} className="space-y-4">
             {/* If Sign Up: Full Name */}
             {authMode === 'SIGNUP' && (
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 uppercase">
-                  Full Name / Entity
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                  Full Name / Producer Entity
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -265,17 +255,17 @@ export const LandingPage: React.FC = () => {
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter full name"
-                    className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                    placeholder="Enter name"
+                    className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition"
                   />
                 </div>
               </div>
             )}
 
             {/* Username or Phone Number */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-300 uppercase">
-                {selectedRole === 'ADMIN' ? 'Admin ID / Node Key' : 'Phone Number / Username'}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                {selectedRole === 'ADMIN' ? 'Validator Key / Node Identifier' : 'Phone Number / Username'}
               </label>
               <div className="relative">
                 {selectedRole === 'ADMIN' ? (
@@ -288,21 +278,21 @@ export const LandingPage: React.FC = () => {
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder={selectedRole === 'ADMIN' ? 'operator.node01' : 'e.g. 9876543210'}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition font-mono"
+                  placeholder={selectedRole === 'ADMIN' ? 'operator.node01' : '9876543210'}
+                  className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition font-mono"
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold text-slate-300 uppercase">
+                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
                   Password
                 </label>
                 {authMode === 'LOGIN' && (
-                  <button type="button" className="text-[10px] text-emerald-400 hover:text-emerald-300">
-                    Forgot password?
+                  <button type="button" className="text-[11px] text-slate-400 hover:text-emerald-400 transition">
+                    Forgot?
                   </button>
                 )}
               </div>
@@ -313,13 +303,13 @@ export const LandingPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition font-mono"
+                  placeholder="••••••••••"
+                  className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-white"
+                  className="absolute right-3.5 top-3 text-slate-400 hover:text-white"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -328,16 +318,16 @@ export const LandingPage: React.FC = () => {
 
             {/* Conditional Buyer Hub Selector */}
             {selectedRole === 'BUYER' && (
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 uppercase">
-                  Primary Delivery Hub
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                  Fulfillment City Hub
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                   <select
                     value={buyerCity}
                     onChange={(e) => setBuyerCity(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full bg-slate-900 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 transition cursor-pointer"
                   >
                     {Object.keys(INDIAN_CITIES).map((cityName) => (
                       <option key={cityName} value={cityName}>
@@ -352,59 +342,27 @@ export const LandingPage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg transition mt-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/60 transition mt-2"
             >
               <span>
                 {authMode === 'LOGIN'
-                  ? `Enter as ${selectedRole === 'FARMER' ? 'Farmer' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'}`
-                  : `Register as ${selectedRole === 'FARMER' ? 'Farmer' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'}`}
+                  ? `Enter as ${selectedRole === 'FARMER' ? 'Farmer (Ravi Singh)' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'}`
+                  : `Create ${selectedRole === 'FARMER' ? 'Farmer' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'} Account`}
               </span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          {/* Quick 1-Click Demo Fill Presets */}
-          <div className="pt-2 border-t border-white/10 text-center space-y-2">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-              1-Click Demo Preset
-            </span>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => applyPreset('FARMER')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
-                  selectedRole === 'FARMER'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
-                }`}
-              >
-                👨‍🌾 Ravi Singh (Farmer)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPreset('BUYER')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
-                  selectedRole === 'BUYER'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
-                }`}
-              >
-                🛒 Priya Sharma (Buyer)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPreset('ADMIN')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
-                  selectedRole === 'ADMIN'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
-                }`}
-              >
-                🛡️ SuperAdmin
-              </button>
-            </div>
+          {/* Quick Demo Fill Helper Strip */}
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
+            <span className="text-slate-400">Quick Test Persona:</span>
+            <button
+              type="button"
+              onClick={() => applyPreset(selectedRole)}
+              className="text-emerald-400 hover:text-emerald-300 font-mono font-medium flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition"
+            >
+              <span>⚡ Load {selectedRole === 'FARMER' ? 'Ravi Singh' : selectedRole === 'BUYER' ? 'Priya Sharma' : 'SuperAdmin'}</span>
+            </button>
           </div>
         </div>
 
