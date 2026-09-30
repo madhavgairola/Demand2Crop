@@ -95,13 +95,13 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen text-slate-100 font-sans selection:bg-emerald-600 selection:text-white">
-      {/* Background Image with Dark Vignette Backdrop */}
+      {/* Background Image with Clean Translucent Backdrop */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${landingBg})` }}
       >
-        {/* Translucent Dark Gradient Overlay for High Visual Contrast & Legibility */}
-        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[1px]" />
+        {/* Soft, Light Dark Overlay so Green Farm Fields Show Vibrantly */}
+        <div className="absolute inset-0 bg-black/35" />
       </div>
 
       {/* TOP HEADER */}
@@ -173,17 +173,20 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* CENTERED TRANSLUCENT FROSTED GLASS LOGIN / SIGNUP CARD */}
-        <div className="w-full max-w-md mx-auto bg-slate-950/65 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-left ring-1 ring-emerald-500/20 transition-all duration-200">
+        <div className="w-full max-w-md mx-auto bg-slate-900/40 backdrop-blur-2xl border border-white/20 border-t-white/35 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.45)] p-6 sm:p-8 space-y-6 text-left transition-all duration-200 relative overflow-hidden">
+          {/* Subtle Glass Top Rim Light */}
+          <div className="absolute inset-x-0 top-0 h-[1px] bg-white/30" />
+
           {/* Role Segmented Tabs (Farmer / Buyer / Admin) */}
           <div className="space-y-1.5">
-            <div className="grid grid-cols-3 p-1.5 bg-black/40 rounded-2xl border border-white/10">
+            <div className="grid grid-cols-3 p-1 bg-black/30 backdrop-blur-md rounded-2xl border border-white/15">
               <button
                 type="button"
                 onClick={() => applyPreset('FARMER')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
+                className={`py-2.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'FARMER'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-black/30 font-bold'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <Sprout className="w-4 h-4" />
@@ -193,10 +196,10 @@ export const LandingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => applyPreset('BUYER')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
+                className={`py-2.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'BUYER'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-black/30 font-bold'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <ShoppingBag className="w-4 h-4" />
@@ -206,10 +209,10 @@ export const LandingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => applyPreset('ADMIN')}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
+                className={`py-2.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all duration-150 ${
                   selectedRole === 'ADMIN'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 font-bold'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-black/30 font-bold'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <ShieldCheck className="w-4 h-4" />
@@ -219,14 +222,14 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Card Header & Mode Switch */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-white/15 pb-4">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-0.5">
                 {selectedRole === 'FARMER' && '🌾 Sovereign Producer Portal'}
                 {selectedRole === 'BUYER' && '🛒 Consumer & Bistro Portal'}
                 {selectedRole === 'ADMIN' && '🛡️ Protocol Auditor Console'}
               </span>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-xl font-bold text-white drop-shadow-sm">
                 {authMode === 'LOGIN' ? 'Sign In' : 'Create Account'}
               </h2>
             </div>
@@ -234,7 +237,7 @@ export const LandingPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setAuthMode(authMode === 'LOGIN' ? 'SIGNUP' : 'LOGIN')}
-              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20"
+              className="text-xs font-medium text-emerald-300 hover:text-white transition px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-sm"
             >
               {authMode === 'LOGIN' ? 'Register' : 'Sign In'}
             </button>
@@ -245,18 +248,18 @@ export const LandingPage: React.FC = () => {
             {/* If Sign Up: Full Name */}
             {authMode === 'SIGNUP' && (
               <div className="space-y-1.5">
-                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                <label className="text-[11px] font-medium text-white/90 uppercase tracking-wide">
                   Full Name / Producer Entity
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <User className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Enter name"
-                    className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition"
+                    className="w-full bg-black/25 backdrop-blur-md border border-white/20 rounded-xl pl-10 pr-3.5 py-3 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 focus:bg-black/35 transition"
                   />
                 </div>
               </div>
@@ -264,14 +267,14 @@ export const LandingPage: React.FC = () => {
 
             {/* Username or Phone Number */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+              <label className="text-[11px] font-medium text-white/90 uppercase tracking-wide">
                 {selectedRole === 'ADMIN' ? 'Validator Key / Node Identifier' : 'Phone Number / Username'}
               </label>
               <div className="relative">
                 {selectedRole === 'ADMIN' ? (
-                  <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Key className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                 ) : (
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Phone className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                 )}
                 <input
                   type="text"
@@ -279,7 +282,7 @@ export const LandingPage: React.FC = () => {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder={selectedRole === 'ADMIN' ? 'operator.node01' : '9876543210'}
-                  className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition font-mono"
+                  className="w-full bg-black/25 backdrop-blur-md border border-white/20 rounded-xl pl-10 pr-3.5 py-3 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 focus:bg-black/35 transition font-mono"
                 />
               </div>
             </div>
@@ -287,29 +290,29 @@ export const LandingPage: React.FC = () => {
             {/* Password */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                <label className="text-[11px] font-medium text-white/90 uppercase tracking-wide">
                   Password
                 </label>
                 {authMode === 'LOGIN' && (
-                  <button type="button" className="text-[11px] text-slate-400 hover:text-emerald-400 transition">
+                  <button type="button" className="text-[11px] text-white/70 hover:text-emerald-300 transition">
                     Forgot?
                   </button>
                 )}
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••"
-                  className="w-full bg-black/35 border border-white/15 rounded-xl pl-10 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-black/55 transition font-mono"
+                  className="w-full bg-black/25 backdrop-blur-md border border-white/20 rounded-xl pl-10 pr-10 py-3 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 focus:bg-black/35 transition font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3 text-slate-400 hover:text-white"
+                  className="absolute right-3.5 top-3.5 text-white/60 hover:text-white"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -319,18 +322,18 @@ export const LandingPage: React.FC = () => {
             {/* Conditional Buyer Hub Selector */}
             {selectedRole === 'BUYER' && (
               <div className="space-y-1.5">
-                <label className="text-[11px] font-medium text-slate-300 uppercase tracking-wide">
+                <label className="text-[11px] font-medium text-white/90 uppercase tracking-wide">
                   Fulfillment City Hub
                 </label>
                 <div className="relative">
-                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <MapPin className="w-4 h-4 text-white/60 absolute left-3.5 top-3.5" />
                   <select
                     value={buyerCity}
                     onChange={(e) => setBuyerCity(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 transition cursor-pointer"
+                    className="w-full bg-black/30 backdrop-blur-md border border-white/20 rounded-xl pl-10 pr-3.5 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 transition cursor-pointer"
                   >
                     {Object.keys(INDIAN_CITIES).map((cityName) => (
-                      <option key={cityName} value={cityName}>
+                      <option key={cityName} value={cityName} className="bg-slate-900 text-white">
                         {cityName} Hub ({INDIAN_CITIES[cityName].state})
                       </option>
                     ))}
@@ -342,7 +345,7 @@ export const LandingPage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/60 transition mt-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-black/40 transition mt-2"
             >
               <span>
                 {authMode === 'LOGIN'
@@ -354,12 +357,12 @@ export const LandingPage: React.FC = () => {
           </form>
 
           {/* Quick Demo Fill Helper Strip */}
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
-            <span className="text-slate-400">Quick Test Persona:</span>
+          <div className="pt-3 border-t border-white/15 flex items-center justify-between text-[11px]">
+            <span className="text-white/70">Quick Test Persona:</span>
             <button
               type="button"
               onClick={() => applyPreset(selectedRole)}
-              className="text-emerald-400 hover:text-emerald-300 font-mono font-medium flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition"
+              className="text-emerald-300 hover:text-white font-mono font-medium flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm transition"
             >
               <span>⚡ Load {selectedRole === 'FARMER' ? 'Ravi Singh' : selectedRole === 'BUYER' ? 'Priya Sharma' : 'SuperAdmin'}</span>
             </button>
