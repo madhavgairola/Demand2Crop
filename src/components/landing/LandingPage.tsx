@@ -4,17 +4,23 @@ import {
   ShoppingBag, 
   ShieldCheck, 
   ArrowRight, 
-  MapPin, 
   Lock, 
-  Truck, 
-  TrendingUp, 
+  Phone, 
+  User, 
+  Key, 
+  ChevronDown, 
   CheckCircle2, 
-  PlayCircle,
-  Sun,
-  Moon,
-  Building2,
-  Users,
-  Award
+  Truck, 
+  Warehouse, 
+  TrendingUp, 
+  Sun, 
+  Moon, 
+  Sparkles,
+  Layers,
+  MapPin,
+  Clock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { UserRole } from '../../types';
@@ -27,63 +33,81 @@ export const LandingPage: React.FC = () => {
     setActiveView, 
     buyerCity, 
     setBuyerCity, 
-    setIsDemoTourActive, 
-    setDemoStep,
     isDarkMode, 
     toggleDarkMode,
     showToast 
   } = useApp();
 
-  const [selectedRoleTab, setSelectedRoleTab] = useState<UserRole>('FARMER');
-  
-  // Form states for customization
-  const [farmerName, setFarmerName] = useState('Ravi Singh');
-  const [farmerLocation, setFarmerLocation] = useState('Ludhiana, Punjab');
-  const [buyerName, setBuyerName] = useState('Priya Sharma');
-  const [buyerType, setBuyerType] = useState<'Consumer' | 'Restaurant'>('Consumer');
-  const [adminKey, setAdminKey] = useState('0x71C84920...SuperAdmin');
+  const [authMode, setAuthMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('FARMER');
 
-  const handleFarmerLogin = () => {
-    setActiveRole('FARMER');
-    setActiveView('farmer');
-    showToast(`Welcome back, ${farmerName}! Navigating to Sovereign Producer Dashboard`, 'success');
+  // Input states
+  const [identifier, setIdentifier] = useState('9876543210');
+  const [password, setPassword] = useState('••••••••••');
+  const [showPassword, setShowPassword] = useState(false);
+  const [fullName, setFullName] = useState('Ravi Singh');
+  const [farmLocation, setFarmLocation] = useState('Ludhiana, Punjab');
+
+  // Quick fill helper for demoing
+  const applyPreset = (role: UserRole) => {
+    setSelectedRole(role);
+    if (role === 'FARMER') {
+      setIdentifier('9876543210');
+      setPassword('farmer@2026');
+      setFullName('Ravi Singh');
+      setFarmLocation('Ludhiana, Punjab');
+    } else if (role === 'BUYER') {
+      setIdentifier('9810012345');
+      setPassword('buyer@2026');
+      setFullName('Priya Sharma');
+      setBuyerCity('Delhi');
+    } else if (role === 'ADMIN') {
+      setIdentifier('operator.node01');
+      setPassword('admin@harvest2026');
+      setFullName('Chief Protocol Auditor');
+    }
   };
 
-  const handleBuyerLogin = () => {
-    setActiveRole('BUYER');
-    setActiveView('marketplace');
-    showToast(`Welcome, ${buyerName}! Exploring harvest forward contracts in ${buyerCity}`, 'success');
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (selectedRole === 'FARMER') {
+      setActiveRole('FARMER');
+      setActiveView('farmer');
+      showToast(`Welcome, ${fullName || 'Ravi Singh'}! Sovereign Producer Dashboard loaded.`, 'success');
+    } else if (selectedRole === 'BUYER') {
+      setActiveRole('BUYER');
+      setActiveView('marketplace');
+      showToast(`Signed in as Buyer (${buyerCity} Hub). Exploring active harvest listings.`, 'success');
+    } else if (selectedRole === 'ADMIN') {
+      setActiveRole('ADMIN');
+      setActiveView('admin');
+      showToast('Protocol administrator session active. Command center unlocked.', 'info');
+    }
   };
 
-  const handleAdminLogin = () => {
-    setActiveRole('ADMIN');
-    setActiveView('admin');
-    showToast('Admin session authenticated. Protocol command center activated', 'info');
-  };
-
-  const startDemoPresentation = () => {
-    setIsDemoTourActive(true);
-    setDemoStep(1);
-    setActiveRole('FARMER');
-    setActiveView('farmer');
-    showToast('SIH Judge Presentation Tour activated! Starting at Step 1', 'info');
+  const scrollToAbout = () => {
+    const el = document.getElementById('about-product');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between overflow-x-hidden font-sans">
-      {/* Background Image with Clean Dark Overlay */}
+    <div className="relative min-h-screen text-slate-100 font-sans selection:bg-emerald-600 selection:text-white">
+      {/* Background Image with Dark Vignette Backdrop */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${landingBg})` }}
       >
-        {/* Crisp Semi-Transparent Dark Overlay for High Contrast */}
-        <div className="absolute inset-0 bg-slate-950/65 backdrop-blur-[1.5px]" />
+        {/* Translucent Dark Gradient Overlay for High Visual Contrast & Legibility */}
+        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[1px]" />
       </div>
 
-      {/* Top Header / Branding Bar */}
+      {/* TOP HEADER */}
       <header className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg text-white">
+        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg text-white">
             <Sprout className="w-6 h-6" />
           </div>
           <div>
@@ -91,18 +115,23 @@ export const LandingPage: React.FC = () => {
               <span className="text-2xl font-black tracking-tight text-white font-mono">
                 Demand<span className="text-emerald-400">2Crop</span>
               </span>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                Protocol
-              </span>
             </div>
-            <p className="text-xs text-slate-300 font-sans tracking-wide">
-              Decentralized Demand-Driven Agricultural Marketplace
+            <p className="text-[11px] text-slate-300 font-sans tracking-wide">
+              Decentralized Agricultural Forward Marketplace
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {/* Theme Toggle Button */}
+        {/* Header Right Actions */}
+        <div className="flex items-center space-x-3 sm:space-x-5">
+          <button 
+            onClick={scrollToAbout}
+            className="hidden md:inline-block text-xs font-semibold text-slate-300 hover:text-white transition"
+          >
+            About Product
+          </button>
+
+          {/* Theme Toggle */}
           <button
             onClick={toggleDarkMode}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-semibold border border-white/20 transition"
@@ -111,363 +140,456 @@ export const LandingPage: React.FC = () => {
             {isDarkMode ? (
               <>
                 <Sun className="w-4 h-4 text-amber-300" />
-                <span className="hidden sm:inline">Light Mode</span>
+                <span className="hidden sm:inline">Light</span>
               </>
             ) : (
               <>
                 <Moon className="w-4 h-4 text-emerald-300" />
-                <span className="hidden sm:inline">Dark Mode</span>
+                <span className="hidden sm:inline">Dark</span>
               </>
             )}
           </button>
 
-          {/* Quick Judge Tour Button */}
           <button
-            onClick={startDemoPresentation}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition"
+            onClick={() => {
+              applyPreset('FARMER');
+              setActiveRole('FARMER');
+              setActiveView('farmer');
+            }}
+            className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition"
           >
-            <PlayCircle className="w-4 h-4" />
-            <span>Judge Demo Tour</span>
+            Explore App
           </button>
         </div>
       </header>
 
-      {/* Main Hero & Login Section */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row items-center justify-between gap-12">
-        {/* Left Column: Mission & Core Value Proposition */}
-        <div className="flex-1 text-left space-y-6">
-          <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-300 px-3.5 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-500/40 backdrop-blur-md">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>Smart India Hackathon (SIH 2026) Student Innovation</span>
+      {/* HERO SECTION WITH CENTERED TRANSLUCENT AUTH CARD */}
+      <section className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col items-center justify-center text-center space-y-8">
+        {/* Core Tagline & Title */}
+        <div className="space-y-3 max-w-2xl mx-auto">
+          <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-300 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="tracking-wide uppercase text-[11px] font-bold">Plan Before You Plant</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15]">
-            Commit Demand First. <br />
-            <span className="text-emerald-400">Farmers Grow With Certainty.</span>
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
+            Grow Against Committed Demand.
           </h1>
 
-          <blockquote className="border-l-4 border-emerald-500 pl-4 py-1 text-base sm:text-lg font-medium text-slate-200 italic leading-relaxed bg-slate-900/40 rounded-r-xl pr-3">
-            "Instead of farmers growing first and searching for buyers later, buyers commit demand first and farmers grow against that demand."
-          </blockquote>
-
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
-            Eliminating predatory informal credit (24–36% APR), middleman distress pricing, and post-harvest spoilage. Powered by smart-contract forward commitments, automated partial-yield settlement, and regional cold-chain dark store routing.
+          <p className="text-sm sm:text-base text-slate-200 font-medium max-w-lg mx-auto leading-relaxed">
+            Eliminate crop distress selling, predatory informal credit, and post-harvest spoilage. Connect farmers directly to buyers through smart contract escrow.
           </p>
-
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-3 gap-3 pt-2 max-w-lg">
-            <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 text-center backdrop-blur-md">
-              <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400">30%</div>
-              <div className="text-[11px] text-slate-300">Upfront Liquidity</div>
-            </div>
-            <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 text-center backdrop-blur-md">
-              <div className="text-xl sm:text-2xl font-bold font-mono text-white">0%</div>
-              <div className="text-[11px] text-slate-300">Distress Selling</div>
-            </div>
-            <div className="bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 text-center backdrop-blur-md">
-              <div className="text-xl sm:text-2xl font-bold font-mono text-cyan-400">100%</div>
-              <div className="text-[11px] text-slate-300">Escrow Security</div>
-            </div>
-          </div>
         </div>
 
-        {/* Right Column: Interactive Role Login Card */}
-        <div className="w-full max-w-md">
-          <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 transition-colors duration-150">
-            {/* Login Card Header */}
-            <div className="text-center space-y-1">
-              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                Select Your Access Role
-              </span>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Enter Demand2Crop
+        {/* CENTERED TRANSLUCENT FROSTED GLASS LOGIN / SIGNUP CARD */}
+        <div className="w-full max-w-md mx-auto bg-slate-950/70 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 text-left">
+          {/* Header Switcher: Sign In vs Sign Up */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h2 className="text-lg font-bold text-white">
+                {authMode === 'LOGIN' ? 'Sign In to Account' : 'Create New Account'}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Choose a portal to interact with the decentralized network
+              <p className="text-xs text-slate-400">
+                {authMode === 'LOGIN' ? 'Access your forward contracts & orders' : 'Join the demand-driven agricultural network'}
               </p>
             </div>
 
-            {/* 3 Role Selection Tabs */}
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setAuthMode(authMode === 'LOGIN' ? 'SIGNUP' : 'LOGIN')}
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition"
+            >
+              {authMode === 'LOGIN' ? 'Create Account' : 'Already registered?'}
+            </button>
+          </div>
+
+          {/* Role Segmented Tabs (Farmer / Buyer / Admin) */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+              Select Portal Role
+            </label>
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-white/5 rounded-2xl border border-white/10">
               <button
-                onClick={() => setSelectedRoleTab('FARMER')}
-                className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center justify-center space-y-1 transition ${
-                  selectedRoleTab === 'FARMER'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                type="button"
+                onClick={() => applyPreset('FARMER')}
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                  selectedRole === 'FARMER'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
-                <Sprout className="w-4 h-4" />
+                <Sprout className="w-3.5 h-3.5" />
                 <span>Farmer</span>
               </button>
 
               <button
-                onClick={() => setSelectedRoleTab('BUYER')}
-                className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center justify-center space-y-1 transition ${
-                  selectedRoleTab === 'BUYER'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                type="button"
+                onClick={() => applyPreset('BUYER')}
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                  selectedRole === 'BUYER'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
-                <ShoppingBag className="w-4 h-4" />
+                <ShoppingBag className="w-3.5 h-3.5" />
                 <span>Buyer</span>
               </button>
 
               <button
-                onClick={() => setSelectedRoleTab('ADMIN')}
-                className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center justify-center space-y-1 transition ${
-                  selectedRoleTab === 'ADMIN'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                type="button"
+                onClick={() => applyPreset('ADMIN')}
+                className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition ${
+                  selectedRole === 'ADMIN'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4" />
+                <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Admin</span>
               </button>
             </div>
+          </div>
 
-            {/* TAB 1: FARMER LOGIN */}
-            {selectedRoleTab === 'FARMER' && (
-              <div className="space-y-4 animate-fade-in">
-                <div className="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
-                      Sovereign Producer Persona
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300">
-                      ⭐ 97/100 Trust Score
-                    </span>
-                  </div>
-                  <div className="text-xs text-slate-700 dark:text-slate-300 space-y-1">
-                    <p className="font-bold text-slate-900 dark:text-white text-sm">Ravi Singh (Ludhiana, Punjab)</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Active Listing: 1,000 kg Wheat (#HC-48291) • 65% Pre-Committed
-                    </p>
-                  </div>
+          {/* Form */}
+          <form onSubmit={handleAuthSubmit} className="space-y-4">
+            {/* If Sign Up: Full Name */}
+            {authMode === 'SIGNUP' && (
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-300 uppercase">
+                  Full Name / Entity
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter full name"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                  />
                 </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Producer Name / Aadhaar
-                    </label>
-                    <input
-                      type="text"
-                      value={farmerName}
-                      onChange={(e) => setFarmerName(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Farm Hub Location
-                    </label>
-                    <input
-                      type="text"
-                      value={farmerLocation}
-                      onChange={(e) => setFarmerLocation(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleFarmerLogin}
-                  className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-md transition"
-                >
-                  <span>Enter as Farmer ({farmerName})</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-
-                <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
-                  Pre-configured with Ravi Singh's 1,000 kg forward wheat contract.
-                </p>
               </div>
             )}
 
-            {/* TAB 2: BUYER LOGIN */}
-            {selectedRoleTab === 'BUYER' && (
-              <div className="space-y-4 animate-fade-in">
-                <div className="bg-sky-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-sky-200 dark:border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-sky-800 dark:text-sky-300">
-                      Demand Commitment Portal
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                      Smart Contract Escrow
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
-                    Pre-purchase future harvests at locked direct-from-farm prices before cultivation.
-                  </p>
-                </div>
+            {/* Username or Phone Number */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-slate-300 uppercase">
+                {selectedRole === 'ADMIN' ? 'Admin ID / Node Key' : 'Phone Number / Username'}
+              </label>
+              <div className="relative">
+                {selectedRole === 'ADMIN' ? (
+                  <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                ) : (
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                )}
+                <input
+                  type="text"
+                  required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder={selectedRole === 'ADMIN' ? 'operator.node01' : 'e.g. 9876543210'}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition font-mono"
+                />
+              </div>
+            </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Buyer Name / Entity
-                    </label>
-                    <input
-                      type="text"
-                      value={buyerName}
-                      onChange={(e) => setBuyerName(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                        Buyer Type
-                      </label>
-                      <select
-                        value={buyerType}
-                        onChange={(e) => setBuyerType(e.target.value as any)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                      >
-                        <option value="Consumer">Retail Consumer</option>
-                        <option value="Restaurant">Restaurant / Bistro</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                        Delivery City Hub
-                      </label>
-                      <select
-                        value={buyerCity}
-                        onChange={(e) => setBuyerCity(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                      >
-                        {Object.keys(INDIAN_CITIES).map((cityName) => (
-                          <option key={cityName} value={cityName}>
-                            {cityName} ({INDIAN_CITIES[cityName].state})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
+            {/* Password */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-slate-300 uppercase">
+                  Password
+                </label>
+                {authMode === 'LOGIN' && (
+                  <button type="button" className="text-[10px] text-emerald-400 hover:text-emerald-300">
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                  className="w-full bg-white/5 border border-white/15 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition font-mono"
+                />
                 <button
-                  onClick={handleBuyerLogin}
-                  className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-md transition"
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-slate-400 hover:text-white"
                 >
-                  <span>Enter Marketplace ({buyerCity})</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
+              </div>
+            </div>
 
-                <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
-                  Enables WOW Flow: Pre-commit to Ravi Singh's 100 kg Wheat contract.
-                </p>
+            {/* Conditional Buyer Hub Selector */}
+            {selectedRole === 'BUYER' && (
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-300 uppercase">
+                  Primary Delivery Hub
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <select
+                    value={buyerCity}
+                    onChange={(e) => setBuyerCity(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/15 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+                  >
+                    {Object.keys(INDIAN_CITIES).map((cityName) => (
+                      <option key={cityName} value={cityName}>
+                        {cityName} Hub ({INDIAN_CITIES[cityName].state})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
 
-            {/* TAB 3: ADMIN LOGIN */}
-            {selectedRoleTab === 'ADMIN' && (
-              <div className="space-y-4 animate-fade-in">
-                <div className="bg-amber-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-amber-200 dark:border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                      Protocol Governance & Oracles
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                      Multi-Sig Overseer
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
-                    Audit smart-contract vaults, dark store silos, perishability routes, and block stream.
-                  </p>
-                </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg transition mt-2"
+            >
+              <span>
+                {authMode === 'LOGIN'
+                  ? `Enter as ${selectedRole === 'FARMER' ? 'Farmer' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'}`
+                  : `Register as ${selectedRole === 'FARMER' ? 'Farmer' : selectedRole === 'BUYER' ? 'Buyer' : 'Admin'}`}
+              </span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
 
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Validator Key / Node Hash
-                    </label>
-                    <input
-                      type="text"
-                      value={adminKey}
-                      onChange={(e) => setAdminKey(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
-                    />
-                  </div>
+          {/* Quick 1-Click Demo Fill Presets */}
+          <div className="pt-2 border-t border-white/10 text-center space-y-2">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+              1-Click Demo Preset
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => applyPreset('FARMER')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
+                  selectedRole === 'FARMER'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
+                }`}
+              >
+                👨‍🌾 Ravi Singh (Farmer)
+              </button>
 
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-1 text-slate-600 dark:text-slate-400">
-                    <div className="flex justify-between">
-                      <span>Active Dark Stores:</span>
-                      <strong className="text-slate-900 dark:text-white">5 Metros</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Consensus:</span>
-                      <strong className="text-emerald-600 dark:text-emerald-400">Proof-of-Fulfillment</strong>
-                    </div>
-                  </div>
-                </div>
+              <button
+                type="button"
+                onClick={() => applyPreset('BUYER')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
+                  selectedRole === 'BUYER'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
+                }`}
+              >
+                🛒 Priya Sharma (Buyer)
+              </button>
 
-                <button
-                  onClick={handleAdminLogin}
-                  className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-md transition"
-                >
-                  <span>Enter Protocol Command Center</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-
-                <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
-                  Access dark store silos, Solidity contract inspector, and ledger explorer.
-                </p>
-              </div>
-            )}
+              <button
+                type="button"
+                onClick={() => applyPreset('ADMIN')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition ${
+                  selectedRole === 'ADMIN'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                    : 'bg-white/5 text-slate-400 border-white/10 hover:text-white'
+                }`}
+              >
+                🛡️ SuperAdmin
+              </button>
+            </div>
           </div>
         </div>
-      </main>
 
-      {/* Bottom Features Strip */}
-      <footer className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-white/20 dark:border-slate-800 text-white">
-          <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-1">
-            <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold">
-              <Sprout className="w-4 h-4" />
-              <span>Zero Predatory Credit</span>
-            </div>
-            <p className="text-[11px] text-slate-300 leading-snug">
-              Farmers unlock 30% upfront capital without moneylenders or 24-36% APR interest.
+        {/* Scroll Prompt */}
+        <button
+          onClick={scrollToAbout}
+          className="flex flex-col items-center justify-center space-y-1 text-slate-400 hover:text-white transition pt-4 animate-bounce"
+        >
+          <span className="text-xs font-semibold tracking-wider uppercase">About The Product</span>
+          <ChevronDown className="w-4 h-4" />
+        </button>
+      </section>
+
+      {/* ABOUT THE PRODUCT SECTION (ON SCROLL DOWN) */}
+      <section id="about-product" className="relative z-10 w-full bg-slate-900/90 dark:bg-slate-950/95 border-t border-white/10 backdrop-blur-2xl py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+              Why Demand2Crop
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              A Direct Agricultural Protocol for Modern India
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              India produces over 300 million tons of food grains annually, yet farmers face price crashes during harvest gluts while consumers pay marked-up prices. Demand2Crop fixes this structural misalignment.
             </p>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-1">
-            <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold">
-              <Lock className="w-4 h-4" />
-              <span>Smart Contract Escrow</span>
+          {/* Comparison Cards: Traditional Broken Mandi vs Demand2Crop Protocol */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* The Broken Traditional Cycle */}
+            <div className="bg-slate-950/70 border border-rose-500/30 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+              <div className="flex items-center space-x-2 text-rose-400 font-bold text-sm">
+                <span>The Traditional Problem</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">
+                Blind Cultivation & Middleman Distress
+              </h3>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
+                <li className="flex items-start space-x-2.5">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span><strong>Predatory Informal Credit:</strong> Farmers borrow at 24–36% APR from local moneylenders to buy seeds and fertilizer.</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span><strong>Harvest Distress Selling:</strong> During regional gluts, mandi traders offer distress rates knowing perishable crops will rot.</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span><strong>Logistics Wastage:</strong> Fragile produce is transported long distances without perishability checks, creating high transit spoilage.</span>
+                </li>
+              </ul>
             </div>
-            <p className="text-[11px] text-slate-300 leading-snug">
-              Funds are secured in HarvestEscrow.sol and released upon certified physical delivery.
-            </p>
+
+            {/* The Demand2Crop Protocol */}
+            <div className="bg-slate-950/70 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+              <div className="flex items-center space-x-2 text-emerald-400 font-bold text-sm">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>The Demand2Crop Architecture</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">
+                Plan Before You Plant
+              </h3>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Forward Pre-Commitment:</strong> Consumers and restaurants lock purchase quantities and pre-agreed prices before planting starts.</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>30% Upfront Working Capital:</strong> Certified sowing unlocks zero-interest working capital directly from the escrow vault.</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Dark Store Cold-Chain Routing:</strong> Automated perishability checks match crops to nearby urban hubs, preventing transit decay.</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-1">
-            <div className="flex items-center space-x-2 text-amber-400 text-xs font-bold">
-              <Truck className="w-4 h-4" />
-              <span>Perishability Routing</span>
+          {/* 4-Step Operational Flow */}
+          <div className="space-y-8">
+            <div className="text-center space-y-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+                End-to-End Workflow
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white">
+                How The Protocol Operates
+              </h3>
             </div>
-            <p className="text-[11px] text-slate-300 leading-snug">
-              Low shelf-life crops are algorithmically matched only to feasible regional dark stores.
-            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-slate-950/60 border border-white/10 p-6 rounded-2xl space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono text-sm border border-emerald-500/30">
+                  01
+                </div>
+                <h4 className="text-base font-bold text-white">Demand Committed</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Buyers pledge future harvest demand. Payments are locked in non-custodial smart contracts until fulfillment.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/60 border border-white/10 p-6 rounded-2xl space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono text-sm border border-emerald-500/30">
+                  02
+                </div>
+                <h4 className="text-base font-bold text-white">Capital Release</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Farmers receive 30% upfront liquidity to finance high-quality seeds, fertilizer, and electricity without informal debt.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/60 border border-white/10 p-6 rounded-2xl space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono text-sm border border-emerald-500/30">
+                  03
+                </div>
+                <h4 className="text-base font-bold text-white">Cold-Chain Intake</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Crops are dispatched to regional dark store silos (Delhi, Mumbai, Bengaluru, Hyderabad, Chennai) where quality grade is verified.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/60 border border-white/10 p-6 rounded-2xl space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold font-mono text-sm border border-emerald-500/30">
+                  04
+                </div>
+                <h4 className="text-base font-bold text-white">Instant Settlement</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  The smart contract releases final payouts. Weather yield drops trigger automated pro-rata payouts and buyer refunds seamlessly.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-1">
-            <div className="flex items-center space-x-2 text-rose-400 text-xs font-bold">
-              <TrendingUp className="w-4 h-4" />
-              <span>Partial Yield Settlement</span>
+          {/* Key Product Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/10 text-center">
+            <div className="p-4 bg-slate-950/50 rounded-2xl border border-white/5 space-y-1">
+              <div className="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">100%</div>
+              <div className="text-xs text-slate-400 font-medium">Demand-Backed Cultivation</div>
             </div>
-            <p className="text-[11px] text-slate-300 leading-snug">
-              Weather anomalies trigger automated pro-rata payouts and buyer refunds seamlessly.
-            </p>
+
+            <div className="p-4 bg-slate-950/50 rounded-2xl border border-white/5 space-y-1">
+              <div className="text-2xl sm:text-3xl font-extrabold font-mono text-white">30%</div>
+              <div className="text-xs text-slate-400 font-medium">Upfront Working Capital</div>
+            </div>
+
+            <div className="p-4 bg-slate-950/50 rounded-2xl border border-white/5 space-y-1">
+              <div className="text-2xl sm:text-3xl font-extrabold font-mono text-cyan-400">5 Metros</div>
+              <div className="text-xs text-slate-400 font-medium">Dark Store Silos</div>
+            </div>
+
+            <div className="p-4 bg-slate-950/50 rounded-2xl border border-white/5 space-y-1">
+              <div className="text-2xl sm:text-3xl font-extrabold font-mono text-amber-400">0%</div>
+              <div className="text-xs text-slate-400 font-medium">Predatory Debt Interest</div>
+            </div>
           </div>
+
+          {/* CTA Banner at bottom of About Section */}
+          <div className="bg-emerald-950/70 border border-emerald-500/40 rounded-3xl p-8 text-center space-y-4 max-w-2xl mx-auto shadow-2xl">
+            <h3 className="text-2xl font-black text-white">
+              Ready to experience Demand2Crop?
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300">
+              Access the live platform as a Farmer, Buyer, or Protocol Auditor to test the complete escrow and logistics flow.
+            </p>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="py-3 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition"
+            >
+              Back to Sign In / Portals ↑
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="relative z-10 w-full bg-slate-950 border-t border-white/10 py-8 px-4 text-center space-y-2">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs text-slate-400 font-mono">
+            Demand2Crop Foundation • Next-Generation Agricultural Supply Infrastructure
+          </p>
+          <p className="text-[11px] text-slate-500">
+            "Plan before you plant" — Connecting Sovereign Producers with Direct Pre-Committed Demand.
+          </p>
         </div>
       </footer>
     </div>

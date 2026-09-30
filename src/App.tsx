@@ -105,7 +105,7 @@ const MainApp: React.FC = () => {
             "Instead of farmers growing first and searching for buyers later, buyers commit demand first and farmers grow against that demand."
           </blockquote>
           <p className="text-xs text-slate-500 mt-2 font-mono">
-            Smart India Hackathon (SIH 2026) Prototype • Real-World Web3 & Supply-Chain Optimization Architecture
+            Demand2Crop Protocol Foundation • Next-Generation Demand-Driven Agricultural Infrastructure
           </p>
         </div>
       </footer>

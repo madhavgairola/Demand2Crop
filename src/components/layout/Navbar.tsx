@@ -47,8 +47,8 @@ export const Navbar: React.FC = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
           </span>
-          <span className="font-semibold text-emerald-100 dark:text-emerald-400">SIH 2026 Innovation Prototype:</span>
-          <span className="text-emerald-50 dark:text-slate-300 hidden sm:inline">Decentralized Demand-Driven Agricultural Protocol</span>
+          <span className="font-semibold text-emerald-100 dark:text-emerald-400">Demand2Crop Network:</span>
+          <span className="text-emerald-50 dark:text-slate-300 hidden sm:inline">Decentralized Demand-Driven Agricultural Protocol (v1.4)</span>
         </div>
 
         <div className="flex items-center space-x-3 sm:space-x-4">
