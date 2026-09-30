@@ -2,19 +2,23 @@ import React, { useState } from 'react';
 import { X, AlertTriangle, ArrowRight, ShieldCheck, CheckCircle2, RotateCcw } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { HarvestListing } from '../../types';
+import { FarmerLang, farmerTranslations } from './farmerTranslations';
 
 interface PartialFulfillmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   listing: HarvestListing;
+  lang?: FarmerLang;
 }
 
 export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = ({
   isOpen,
   onClose,
-  listing
+  listing,
+  lang = 'en'
 }) => {
   const { simulatePartialFulfillment } = useApp();
+  const t = farmerTranslations[lang];
 
   const [actualYieldKg, setActualYieldKg] = useState<number>(700);
 
@@ -44,8 +48,8 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Partial Harvest Fulfillment Simulator</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Simulate agricultural yield shortfall & automated smart contract settlement</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">{t.simModalTitle}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t.simModalSubtitle}</p>
             </div>
           </div>
           <button
@@ -74,14 +78,14 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
           <div className="bg-slate-50/70 dark:bg-slate-950/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                Simulated Actual Farm Gate Harvest:
+                {t.simActualYield}:
               </label>
               <div className="text-right">
                 <span className="text-lg font-bold font-mono text-amber-700 dark:text-amber-400">
                   {actualYieldKg.toLocaleString()} kg
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">
-                  ({fulfillmentPct}% of expected {expectedKg} kg)
+                  ({fulfillmentPct}% {lang === 'hi' ? 'अपेक्षित का' : 'of expected'} {expectedKg} kg)
                 </span>
               </div>
             </div>
@@ -97,14 +101,14 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
             />
 
             <div className="flex justify-between text-[11px] text-slate-500 font-mono">
-              <span>200 kg (Severe Drought)</span>
+              <span>200 kg ({lang === 'hi' ? 'गंभीर सूखा' : 'Severe Drought'})</span>
               <button 
                 onClick={() => setActualYieldKg(700)} 
                 className="text-emerald-700 dark:text-amber-400 font-bold underline font-sans"
               >
-                Set 700 kg (Demo Standard)
+                {t.simSet700}
               </button>
-              <span>{expectedKg} kg (100% Target)</span>
+              <span>{expectedKg} kg (100% {lang === 'hi' ? 'लक्ष्य' : 'Target'})</span>
             </div>
           </div>
 
@@ -113,28 +117,32 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
             {/* Farmer Settlement */}
             <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 rounded-xl p-4">
               <div className="flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-400 font-semibold mb-1">
-                <span>Farmer Payout</span>
+                <span>{t.simFarmerPayout}</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
                 ₹{farmerPayout.toLocaleString()}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                Paid for {actualYieldKg.toLocaleString()} kg delivered at agreed ₹{listing.pricePerKg}/kg
+                {lang === 'hi'
+                  ? `वास्तविक पैदावार ${actualYieldKg.toLocaleString()} kg का तयशुदा ₹${listing.pricePerKg}/kg पर पूरा भुगतान`
+                  : `Paid for ${actualYieldKg.toLocaleString()} kg delivered at agreed ₹${listing.pricePerKg}/kg`}
               </p>
             </div>
 
             {/* Buyer Refund */}
             <div className="bg-cyan-50 dark:bg-cyan-950/20 border border-cyan-200 dark:border-cyan-800/40 rounded-xl p-4">
               <div className="flex items-center justify-between text-xs text-cyan-800 dark:text-cyan-400 font-semibold mb-1">
-                <span>Buyer Refund Pool</span>
+                <span>{t.simBuyerRefund}</span>
                 <RotateCcw className="w-4 h-4 text-cyan-600" />
               </div>
               <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
                 ₹{buyerRefundTotal.toLocaleString()}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                Automatically refunded for {shortfallKg.toLocaleString()} kg unfulfilled crop shortfall
+                {lang === 'hi'
+                  ? `कम हुई ${shortfallKg.toLocaleString()} kg पैदावार की सुरक्षित राशि खरीदारों को स्वचालित रिफंड`
+                  : `Automatically refunded for ${shortfallKg.toLocaleString()} kg unfulfilled crop shortfall`}
               </p>
             </div>
           </div>
@@ -143,16 +151,16 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
           <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5 font-mono">
             <div className="text-slate-800 dark:text-slate-400 font-semibold font-sans text-xs flex items-center space-x-1.5 text-emerald-700 dark:text-emerald-400">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Smart Contract Automated Settlement Formula:</span>
+              <span>{t.simFormulaTitle}:</span>
             </div>
             <p className="text-slate-600 dark:text-slate-400">
-              Fulfillment Ratio = {actualYieldKg} kg / {expectedKg} kg = <strong className="text-slate-900 dark:text-white">{fulfillmentRatio.toFixed(3)}</strong>
+              {lang === 'hi' ? 'उपज अनुपात (Fulfillment Ratio)' : 'Fulfillment Ratio'} = {actualYieldKg} kg / {expectedKg} kg = <strong className="text-slate-900 dark:text-white">{fulfillmentRatio.toFixed(3)}</strong>
             </p>
             <p className="text-slate-600 dark:text-slate-400">
-              Disbursed to Farmer = ₹{totalEscrow.toLocaleString()} × {fulfillmentRatio.toFixed(3)} = <strong className="text-emerald-700 dark:text-emerald-400">₹{farmerPayout.toLocaleString()}</strong>
+              {lang === 'hi' ? 'किसान को भुगतान' : 'Disbursed to Farmer'} = ₹{totalEscrow.toLocaleString()} × {fulfillmentRatio.toFixed(3)} = <strong className="text-emerald-700 dark:text-emerald-400">₹{farmerPayout.toLocaleString()}</strong>
             </p>
             <p className="text-slate-600 dark:text-slate-400">
-              Returned to Buyers = ₹{totalEscrow.toLocaleString()} - ₹{farmerPayout.toLocaleString()} = <strong className="text-cyan-700 dark:text-cyan-400">₹{buyerRefundTotal.toLocaleString()}</strong>
+              {lang === 'hi' ? 'खरीदारों को रिफंड' : 'Returned to Buyers'} = ₹{totalEscrow.toLocaleString()} - ₹{farmerPayout.toLocaleString()} = <strong className="text-cyan-700 dark:text-cyan-400">₹{buyerRefundTotal.toLocaleString()}</strong>
             </p>
           </div>
         </div>
@@ -160,20 +168,20 @@ export const PartialFulfillmentModal: React.FC<PartialFulfillmentModalProps> = (
         {/* Footer Actions */}
         <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
-            Demonstrates real-world agricultural risk governance
+            {lang === 'hi' ? 'कृषि में मौसम जोखिम का पारदर्शी व सुरक्षित समाधान' : 'Demonstrates real-world agricultural risk governance'}
           </span>
           <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t.modalCancel}
             </button>
             <button
               onClick={handleExecute}
               className="px-5 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm flex items-center space-x-2"
             >
-              <span>Execute On-Chain Settlement</span>
+              <span>{t.simExecuteBtn}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
