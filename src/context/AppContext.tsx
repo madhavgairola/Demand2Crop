@@ -89,7 +89,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeRole, setActiveRoleState] = useState<UserRole>('FARMER');
-  const [activeView, setActiveView] = useState<AppView>('farmer');
+  const [activeView, setActiveView] = useState<AppView>('landing');
   const [buyerCity, setBuyerCity] = useState<string>('Delhi');
 
   const [listings, setListings] = useState<HarvestListing[]>(INITIAL_LISTINGS);

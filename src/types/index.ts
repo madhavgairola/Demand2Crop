@@ -235,6 +235,7 @@ export interface LedgerBlock {
 
 export type UserRole = 'FARMER' | 'BUYER' | 'ADMIN';
 export type AppView = 
+  | 'landing'
   | 'farmer' 
   | 'marketplace' 
   | 'orders' 

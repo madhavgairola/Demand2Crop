@@ -11,10 +11,43 @@ import { DemandDashboard } from './components/demand/DemandDashboard';
 import { HarvestContractView } from './components/contract/HarvestContractView';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { BlockchainExplorer } from './components/blockchain/BlockchainExplorer';
+import { LandingPage } from './components/landing/LandingPage';
 import { CheckCircle2, AlertCircle, Info, Sparkles, Sprout } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { activeView, toast } = useApp();
+
+  if (activeView === 'landing') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-600 selection:text-white">
+        <LandingPage />
+
+        {/* Global Toast Alert */}
+        {toast && (
+          <div className="fixed bottom-6 right-6 z-50 animate-bounce-short">
+            <div
+              className={`px-4 py-3 rounded-xl shadow-xl flex items-center space-x-3 text-xs font-semibold border ${
+                toast.type === 'success'
+                  ? 'bg-white dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-500 shadow-emerald-500/10'
+                  : toast.type === 'warning'
+                    ? 'bg-white dark:bg-amber-950/90 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-500 shadow-amber-500/10'
+                    : 'bg-white dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-slate-500/10'
+              }`}
+            >
+              {toast.type === 'success' ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              ) : toast.type === 'warning' ? (
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              ) : (
+                <Info className="w-4 h-4 text-sky-600 dark:text-cyan-400 shrink-0" />
+              )}
+              <span>{toast.message}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-emerald-600 selection:text-white transition-colors duration-200">
