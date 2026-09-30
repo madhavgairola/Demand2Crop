@@ -97,9 +97,14 @@ export const FarmerDashboard: React.FC = () => {
 
   const t = farmerTranslations[lang];
 
-  // Focus on Ravi Singh's primary demo listing (Ludhiana Wheat)
+  const [selectedListingId, setSelectedListingId] = useState<string>('');
+
+  // Farmer's listings
   const raviListings = listings.filter((l) => l.farmerId === 'farmer-ravi-singh');
-  const primaryListing = raviListings.find((l) => l.crop === 'Wheat') || raviListings[0] || listings[0];
+  const primaryListing = 
+    (selectedListingId ? listings.find((l) => l.id === selectedListingId) : null) || 
+    raviListings[0] || 
+    listings[0];
 
   const committedPct = Math.round((primaryListing.committedQuantityKg / primaryListing.expectedQuantityKg) * 100);
   const remainingKg = Math.max(0, primaryListing.expectedQuantityKg - primaryListing.committedQuantityKg);
@@ -209,54 +214,39 @@ export const FarmerDashboard: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* 2. Clear Visual Problem & Solution Comparison */}
-        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="bg-rose-50 dark:bg-rose-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-900/40">
-            <span className="font-semibold text-rose-800 dark:text-rose-400 flex items-center space-x-2 mb-1.5 text-sm">
-              <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-              <span>{t.dilemmaTitle}</span>
-            </span>
-            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-              {t.dilemmaDesc}
-            </p>
-          </div>
-
-          <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
-            <span className="font-semibold text-emerald-800 dark:text-emerald-400 flex items-center space-x-2 mb-1.5 text-sm">
-              <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>{t.solutionTitle}</span>
-            </span>
-            <p className="text-slate-800 dark:text-slate-200 leading-relaxed">
-              {t.solutionDesc}
-            </p>
-          </div>
-        </div>
-
-        {/* 3. Quick Farmer Guide Banner (3 Simple Steps) */}
-        <div className="mt-4 bg-slate-50 dark:bg-slate-950/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-          <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5 shrink-0">
-            <Info className="w-4 h-4 text-emerald-600" />
-            <span>{t.guideTitle}:</span>
+      {/* 2. Crop Management Switcher Tabs */}
+      <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center space-x-2">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
+            {lang === 'hi' ? 'प्रबंधित फसल:' : 'Managing Harvest:'}
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-            <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
-              <strong className="text-emerald-700 dark:text-emerald-400 block">{t.step1Title}</strong>
-              <span className="text-slate-600 dark:text-slate-400 text-[11px]">{t.step1Desc}</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
-              <strong className="text-emerald-700 dark:text-emerald-400 block">{t.step2Title}</strong>
-              <span className="text-slate-600 dark:text-slate-400 text-[11px]">{t.step2Desc}</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
-              <strong className="text-emerald-700 dark:text-emerald-400 block">{t.step3Title}</strong>
-              <span className="text-slate-600 dark:text-slate-400 text-[11px]">{t.step3Desc}</span>
-            </div>
-          </div>
+          {raviListings.map((l) => {
+            const isSelected = l.id === primaryListing.id;
+            const cropIcon = CROP_ICONS[l.crop] || '🌱';
+            const cropHindi = CROP_HINDI_NAMES[l.crop] || l.crop;
+            return (
+              <button
+                key={l.id}
+                onClick={() => setSelectedListingId(l.id)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center space-x-2 border ${
+                  isSelected
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs ring-2 ring-emerald-600/20'
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <span>{cropIcon}</span>
+                <span>{lang === 'hi' ? cropHindi : l.crop}</span>
+                <span className="text-[10px] opacity-80 font-mono">({l.variety})</span>
+                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* 4. Primary Active Listing Card: Ravi Singh's Wheat */}
+      {/* 3. Primary Active Listing Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm transition-colors duration-150">
         {/* Card Header */}
         <div className="p-5 md:p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -526,20 +516,37 @@ export const FarmerDashboard: React.FC = () => {
             const cropIcon = CROP_ICONS[listing.crop] || '🌱';
             const cropHindi = CROP_HINDI_NAMES[listing.crop] || listing.crop;
             const itemCommittedPct = Math.min(100, Math.round((listing.committedQuantityKg / listing.expectedQuantityKg) * 100));
+            const isSelected = listing.id === primaryListing.id;
 
             return (
               <div
                 key={listing.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 hover:border-slate-300 dark:hover:border-slate-700 transition shadow-xs"
+                onClick={() => {
+                  setSelectedListingId(listing.id);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`bg-white dark:bg-slate-900 border rounded-xl p-4 space-y-3 cursor-pointer transition shadow-xs ${
+                  isSelected 
+                    ? 'border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-50/20 dark:bg-emerald-950/20' 
+                    : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-slate-700'
+                }`}
+                title={lang === 'hi' ? 'इस फसल का विवरण व प्रबंधन देखने के लिए क्लिक करें' : 'Click to select and manage this harvest'}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-2.5">
                     <span className="text-2xl">{cropIcon}</span>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
-                        <span>{lang === 'hi' ? cropHindi : listing.crop}</span>
+                      <div className="flex items-center space-x-1.5">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                          {lang === 'hi' ? cropHindi : listing.crop}
+                        </h4>
                         <span className="text-xs text-slate-500 dark:text-slate-400 font-normal">({listing.variety})</span>
-                      </h4>
+                        {isSelected && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+                            {lang === 'hi' ? 'सक्रिय' : 'Active'}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         {lang === 'hi' && listing.farmerName === 'Ravi Singh' ? 'रवि सिंह' : listing.farmerName} • {listing.farmerLocation}
                       </p>
@@ -580,13 +587,14 @@ export const FarmerDashboard: React.FC = () => {
       <CreateHarvestModal 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
+        onCreated={(newId) => setSelectedListingId(newId)}
         lang={lang} 
       />
       <PartialFulfillmentModal
         isOpen={isPartialOpen}
         onClose={() => setIsPartialOpen(false)}
         listing={primaryListing}
-        lang={lang}
+        lang={lang} 
       />
       <FarmerReputationModal 
         isOpen={isReputationOpen} 

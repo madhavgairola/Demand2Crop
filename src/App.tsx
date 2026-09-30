@@ -1,7 +1,6 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
-import { DemoWalkthroughBar } from './components/demo/DemoWalkthroughBar';
 import { FarmerDashboard } from './components/farmer/FarmerDashboard';
 import { Marketplace } from './components/marketplace/Marketplace';
 import { OrderTrackingView } from './components/orders/OrderTrackingView';
@@ -53,9 +52,6 @@ const MainApp: React.FC = () => {
     <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-emerald-600 selection:text-white transition-colors duration-200">
       {/* Navbar with Role & City selection */}
       <Navbar />
-
-      {/* Guided SIH Demo Tour Presenter Toolbar */}
-      <DemoWalkthroughBar />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">

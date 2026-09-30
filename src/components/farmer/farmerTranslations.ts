@@ -98,7 +98,7 @@ export const farmerTranslations = {
     simBuyerRefund: 'Buyer Refund Pool',
     simBuyerRefundDesc: 'Automatic refund for shortfall not produced',
     simFormulaTitle: 'Automated Fair Settlement Formula',
-    simSet700: 'Set 700 kg (Standard Demo)',
+    simSet700: 'Set 700 kg (Example Shortfall)',
     simExecuteBtn: 'Execute Settlement',
 
     // Reputation Modal
@@ -210,7 +210,7 @@ export const farmerTranslations = {
     simBuyerRefund: 'खरीदार को रिफंड राशि',
     simBuyerRefundDesc: 'जो फसल नहीं उग सकी, उसका पैसा खरीदार को तुरंत वापस',
     simFormulaTitle: 'स्मार्ट कॉन्ट्रैक्ट स्वचालित निष्पक्ष फॉर्मूला',
-    simSet700: '700 किलो सेट करें (डेमो मानक)',
+    simSet700: '700 किलो सेट करें (उदाहरण)',
     simExecuteBtn: 'निपटान लागू करें',
 
     // Reputation Modal

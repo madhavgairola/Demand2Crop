@@ -9,6 +9,7 @@ interface CreateHarvestModalProps {
   isOpen: boolean;
   onClose: () => void;
   lang?: FarmerLang;
+  onCreated?: (newListingId: string) => void;
 }
 
 const CROP_HINDI_NAMES: Partial<Record<CropType, string>> = {
@@ -26,7 +27,7 @@ const CROP_HINDI_NAMES: Partial<Record<CropType, string>> = {
   'Pulses (Arhar)': 'अरहर दाल'
 };
 
-export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, onClose, lang = 'en' }) => {
+export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, onClose, lang = 'en', onCreated }) => {
   const { createHarvestListing } = useApp();
   const t = farmerTranslations[lang];
 
@@ -48,7 +49,7 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createHarvestListing({
+    const created = createHarvestListing({
       crop,
       variety,
       expectedQuantityKg,
@@ -59,6 +60,9 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
       qualityGrade: 'GRADE_A',
       description
     });
+    if (onCreated && created) {
+      onCreated(created.id);
+    }
     onClose();
   };
 

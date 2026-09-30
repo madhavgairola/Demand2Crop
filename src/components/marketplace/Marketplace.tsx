@@ -189,7 +189,7 @@ export const Marketplace: React.FC = () => {
                         <h4 className="text-base font-bold text-slate-900 dark:text-white">{listing.crop}</h4>
                         {isRaviListing && (
                           <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-300 dark:border-emerald-700/50 uppercase">
-                            Demo Primary
+                            Featured
                           </span>
                         )}
                       </div>

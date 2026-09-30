@@ -52,7 +52,7 @@ export const LogisticsView: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-6 space-y-5 transition-colors duration-150">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            Primary Demo Fulfillment Corridor: Ludhiana Farm Gate → Delhi NCR Hub → Customer
+            Active Fulfillment Corridor: Ludhiana Farm Gate → Delhi NCR Hub → Customer
           </span>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800 uppercase">
             Active Real-Time Corridor

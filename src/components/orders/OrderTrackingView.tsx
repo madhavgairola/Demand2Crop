@@ -74,14 +74,14 @@ export const OrderTrackingView: React.FC = () => {
           </p>
         </div>
 
-        {/* Live Demo Advance Controller */}
+        {/* Live Milestone Controller */}
         <div className="flex items-center space-x-2">
           {currentStageIndex < stageOrder.length - 1 ? (
             <button
               onClick={handleAdvanceStep}
               className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm"
             >
-              <span>Simulate Next Stage ({stageOrder[currentStageIndex + 1]})</span>
+              <span>Advance Stage: {stageOrder[currentStageIndex + 1]}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           ) : (

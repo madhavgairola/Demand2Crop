@@ -5,13 +5,11 @@ import {
   ShieldCheck, 
   MapPin, 
   Layers, 
-  PlayCircle, 
   RotateCcw,
   Truck,
   Warehouse,
   TrendingUp,
   FileCode2,
-  Activity,
   Sun,
   Moon,
   LogOut
@@ -28,65 +26,13 @@ export const Navbar: React.FC = () => {
     setActiveView, 
     buyerCity, 
     setBuyerCity,
-    isDemoTourActive,
-    setIsDemoTourActive,
     resetDemoData,
-    blocks,
     isDarkMode,
     toggleDarkMode
   } = useApp();
 
-  const latestBlock = blocks[0]?.blockNumber || 104293;
-
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-150">
-      {/* Top Banner: SIH 2026 Innovation Badge & Protocol Status */}
-      <div className="bg-emerald-800 dark:bg-slate-900 px-4 py-1.5 border-b border-emerald-700 dark:border-slate-800 flex items-center justify-between text-xs text-white">
-        <div className="flex items-center space-x-2">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-          </span>
-          <span className="font-semibold text-emerald-100 dark:text-emerald-400">Demand2Crop Network:</span>
-          <span className="text-emerald-50 dark:text-slate-300 hidden sm:inline">Decentralized Demand-Driven Agricultural Protocol (v1.4)</span>
-        </div>
-
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <div className="flex items-center space-x-1.5 text-emerald-100 dark:text-slate-400 font-mono text-[11px]">
-            <Activity className="w-3.5 h-3.5 text-emerald-300 dark:text-cyan-400" />
-            <span>Block: <strong className="text-white dark:text-cyan-300">#{latestBlock}</strong></span>
-          </div>
-
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleDarkMode}
-            className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-emerald-700 hover:bg-emerald-600 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-[11px] font-medium transition"
-            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            {isDarkMode ? (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-300" />
-                <span className="hidden sm:inline">Light Mode</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-3.5 h-3.5 text-emerald-200" />
-                <span className="hidden sm:inline">Dark Mode</span>
-              </>
-            )}
-          </button>
-
-          <button 
-            onClick={resetDemoData}
-            title="Reset to default benchmark demo data"
-            className="flex items-center space-x-1 text-emerald-100 hover:text-white dark:text-slate-400 dark:hover:text-slate-200 transition text-[11px] px-2 py-0.5 rounded bg-emerald-700/60 hover:bg-emerald-700 dark:bg-slate-800/60 dark:hover:bg-slate-800"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span className="hidden sm:inline">Reset</span>
-          </button>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -124,7 +70,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Navigation & Tools */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Buyer City Selector (Shown only for Buyer role) */}
             {activeRole === 'BUYER' && (
               <div className="hidden md:flex items-center space-x-1.5 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
@@ -144,23 +90,38 @@ export const Navbar: React.FC = () => {
               </div>
             )}
 
-            {/* Presentation Tour Button */}
+            {/* Dark Mode Toggle Button */}
             <button
-              onClick={() => setIsDemoTourActive(!isDemoTourActive)}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
-                isDemoTourActive 
-                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' 
-                  : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 dark:bg-slate-900 dark:text-amber-400 dark:border-amber-500/30 dark:hover:bg-slate-800'
-              }`}
+              onClick={toggleDarkMode}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs transition"
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              <PlayCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Presentation Tour</span>
+              {isDarkMode ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-500" />
+                  <span className="hidden sm:inline">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  <span className="hidden sm:inline">Dark</span>
+                </>
+              )}
+            </button>
+
+            {/* Reset Data Button */}
+            <button 
+              onClick={resetDemoData}
+              title="Reset data"
+              className="p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 shadow-xs transition"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
             {/* Log Out Button */}
             <button
               onClick={() => setActiveView('landing')}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-slate-300 dark:border-slate-700 bg-white hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 dark:bg-slate-900 dark:hover:bg-rose-950/40 dark:hover:border-rose-800 dark:hover:text-rose-300 text-slate-700 dark:text-slate-300 shadow-sm"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 dark:bg-slate-900 dark:hover:bg-rose-950/40 dark:hover:border-rose-800 dark:hover:text-rose-300 text-slate-700 dark:text-slate-300 text-xs font-semibold shadow-xs transition"
               title="Log out and return to portal selection"
             >
               <LogOut className="w-3.5 h-3.5" />

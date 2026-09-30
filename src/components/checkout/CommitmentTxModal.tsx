@@ -161,7 +161,7 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
               <div className="flex justify-between text-[11px] text-slate-500 font-mono">
                 <span>10 kg</span>
                 <span className="text-emerald-700 dark:text-emerald-400 font-bold cursor-pointer" onClick={() => setQuantityKg(100)}>
-                  100 kg (Demo Choice)
+                  100 kg (Quick Select)
                 </span>
                 <span>{Math.min(500, maxRemaining)} kg</span>
               </div>
