@@ -114,63 +114,35 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Central Role Selector */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
-            <button
-              onClick={() => setActiveRole('FARMER')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                activeRole === 'FARMER'
-                  ? 'bg-emerald-700 text-white shadow-sm font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Sprout className="w-4 h-4" />
-              <span>Farmer (Ravi Singh)</span>
-            </button>
-
-            <button
-              onClick={() => setActiveRole('BUYER')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                activeRole === 'BUYER'
-                  ? 'bg-emerald-600 text-white shadow-sm font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Buyer / Pre-Commit</span>
-            </button>
-
-            <button
-              onClick={() => setActiveRole('ADMIN')}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                activeRole === 'ADMIN'
-                  ? 'bg-slate-800 text-white shadow-sm font-semibold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>Admin / Logistics</span>
-            </button>
+          {/* Current Logged In Persona Chip */}
+          <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-slate-500 dark:text-slate-400 font-medium">Active Session:</span>
+            <span className="text-slate-800 dark:text-slate-200 font-semibold font-mono">
+              {activeRole === 'FARMER' ? 'Sovereign Producer' : activeRole === 'BUYER' ? `Buyer (${buyerCity})` : 'Protocol Admin'}
+            </span>
           </div>
 
           {/* Right Navigation & Tools */}
           <div className="flex items-center space-x-3">
-            {/* Buyer City Selector */}
-            <div className="hidden md:flex items-center space-x-1.5 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
-              <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-slate-500 dark:text-slate-400">Buyer Hub:</span>
-              <select
-                value={buyerCity}
-                onChange={(e) => setBuyerCity(e.target.value)}
-                className="bg-transparent text-slate-800 dark:text-slate-200 font-medium focus:outline-none cursor-pointer"
-              >
-                {Object.keys(INDIAN_CITIES).map((c) => (
-                  <option key={c} value={c} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-                    {c} ({INDIAN_CITIES[c].state})
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Buyer City Selector (Shown only for Buyer role) */}
+            {activeRole === 'BUYER' && (
+              <div className="hidden md:flex items-center space-x-1.5 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-slate-500 dark:text-slate-400">Buyer Hub:</span>
+                <select
+                  value={buyerCity}
+                  onChange={(e) => setBuyerCity(e.target.value)}
+                  className="bg-transparent text-slate-800 dark:text-slate-200 font-medium focus:outline-none cursor-pointer"
+                >
+                  {Object.keys(INDIAN_CITIES).map((c) => (
+                    <option key={c} value={c} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+                      {c} ({INDIAN_CITIES[c].state})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Presentation Tour Button */}
             <button
@@ -185,14 +157,14 @@ export const Navbar: React.FC = () => {
               <span className="hidden sm:inline">Presentation Tour</span>
             </button>
 
-            {/* Switch Role / Exit to Landing */}
+            {/* Log Out Button */}
             <button
               onClick={() => setActiveView('landing')}
-              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm"
-              title="Return to Landing Page / Switch Role"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-slate-300 dark:border-slate-700 bg-white hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700 dark:bg-slate-900 dark:hover:bg-rose-950/40 dark:hover:border-rose-800 dark:hover:text-rose-300 text-slate-700 dark:text-slate-300 shadow-sm"
+              title="Log out and return to portal selection"
             >
-              <LogOut className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden sm:inline">Switch Role</span>
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log out</span>
             </button>
           </div>
         </div>
@@ -201,7 +173,7 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center space-x-1 sm:space-x-3 border-t border-slate-200 dark:border-slate-800/80 py-2 overflow-x-auto text-xs scrollbar-none">
           {activeRole === 'FARMER' && (
             <>
-              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label="Farmer Dashboard (Ravi Singh)" />
+              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label="Farmer Dashboard" />
               <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label="Demand Aggregation Pools" />
               <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label="Harvest Contract (#HC-48291)" />
               <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label="Dark Store Silos" />
