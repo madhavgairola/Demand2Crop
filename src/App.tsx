@@ -66,7 +66,7 @@ const MainApp: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center space-x-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 mb-2">
             <Sprout className="w-3.5 h-3.5" />
-            <span>The AgriLedger Core Value Paradigm</span>
+            <span>The Demand2Crop Core Value Paradigm</span>
           </div>
           <blockquote className="text-sm sm:text-base font-medium text-slate-800 dark:text-slate-200 italic tracking-wide">
             "Instead of farmers growing first and searching for buyers later, buyers commit demand first and farmers grow against that demand."

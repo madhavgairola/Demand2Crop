@@ -1,4 +1,4 @@
-# AgriLedger — System Architecture & Workflow Flowcharts
+# Demand2Crop — System Architecture & Workflow Flowcharts
 
 > **Core Value Paradigm:** *"Instead of farmers growing first and searching for buyers later, buyers commit demand first and farmers grow against that demand."*
 
@@ -170,7 +170,7 @@ flowchart LR
 flowchart TD
     RESTAURANT["🍽️ Institutional Buyer\n(e.g., Delhi Restaurant Chain)\nDemand: 10,000 kg Tomatoes @ ₹16/kg"]
     
-    POOL["AgriLedger Demand Aggregation Pool\n(Smart Contract Escrow: ₹1,60,000 locked)"]
+    POOL["Demand2Crop Demand Aggregation Pool\n(Smart Contract Escrow: ₹1,60,000 locked)"]
     
     FARMER_A["👨‍🌾 Farmer Aman (Haryana)\nContributes: 2,000 kg"]
     FARMER_B["👨‍🌾 Farmer Harpreet (Punjab)\nContributes: 3,000 kg"]

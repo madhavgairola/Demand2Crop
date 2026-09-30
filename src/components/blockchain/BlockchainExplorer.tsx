@@ -25,7 +25,7 @@ export const BlockchainExplorer: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-2 transition-colors duration-150">
         <div className="flex items-center space-x-2">
           <Layers className="w-6 h-6 text-emerald-600 dark:text-cyan-400" />
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">AgriLedger Distributed Ledger Explorer</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Demand2Crop Distributed Ledger Explorer</h2>
         </div>
         <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl">
           Zero-Knowledge Proof & EVM consensus layer recording forward crop commitments, non-custodial escrow balances,

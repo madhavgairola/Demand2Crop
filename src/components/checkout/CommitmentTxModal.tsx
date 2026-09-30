@@ -233,7 +233,7 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
 
             <div className="space-y-1.5">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white">Executing Distributed Ledger Escrow</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Interacting with AgriLedger EVM Consensus Node...</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Interacting with Demand2Crop EVM Consensus Node...</p>
             </div>
 
             {/* Stepper Progress */}

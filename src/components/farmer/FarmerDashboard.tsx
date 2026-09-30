@@ -118,7 +118,7 @@ export const FarmerDashboard: React.FC = () => {
           <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
             <span className="font-semibold text-emerald-800 dark:text-emerald-400 flex items-center space-x-1.5 mb-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>AgriLedger Demand-Driven Model</span>
+              <span>Demand2Crop Demand-Driven Model</span>
             </span>
             <p className="text-slate-800 dark:text-slate-300 leading-relaxed">
               <strong>Buyers commit demand first</strong> with funds locked in smart contract escrow. Ravi receives guaranteed demand visibility, locked pre-agreed prices, and 30% upfront working capital!

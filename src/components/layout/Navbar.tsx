@@ -97,7 +97,7 @@ export const Navbar: React.FC = () => {
             <div>
               <div className="flex items-center space-x-1.5">
                 <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white font-mono">
-                  Agri<span className="text-emerald-700 dark:text-emerald-400">Ledger</span>
+                  Demand<span className="text-emerald-700 dark:text-emerald-400">2Crop</span>
                 </span>
                 <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700/50">
                   Protocol

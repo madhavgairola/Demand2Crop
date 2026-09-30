@@ -1,4 +1,4 @@
-# AgriLedger — Decentralized Demand-Driven Agricultural Marketplace & Fulfillment Protocol
+# Demand2Crop — Decentralized Demand-Driven Agricultural Marketplace & Fulfillment Protocol
 **Smart India Hackathon (SIH 2026) Student Innovation Prototype**
 
 > **Core Value Paradigm:**  

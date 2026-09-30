@@ -43,7 +43,7 @@ export const LogisticsView: React.FC = () => {
           </h2>
         </div>
         <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl">
-          Agricultural produce cannot be shipped indiscriminately like consumer electronics. AgriLedger evaluates
+          Agricultural produce cannot be shipped indiscriminately like consumer electronics. Demand2Crop evaluates
           crop shelf-life, cold-chain temperature thresholds, and highway freight transit hours to enforce feasible routes and dynamic logistics pricing.
         </p>
       </div>

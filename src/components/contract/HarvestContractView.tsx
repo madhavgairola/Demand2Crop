@@ -107,7 +107,7 @@ export const HarvestContractView: React.FC = () => {
 
           <div className="space-y-1">
             <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-sans font-semibold">Consensus Network</span>
-            <p className="text-slate-900 dark:text-white text-[11px]">AgriLedger Rollup (L2 EVM)</p>
+            <p className="text-slate-900 dark:text-white text-[11px]">Demand2Crop Rollup (L2 EVM)</p>
           </div>
 
           <div className="space-y-1">
