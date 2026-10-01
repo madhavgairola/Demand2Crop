@@ -244,4 +244,5 @@ export type AppView =
   | 'demand' 
   | 'contract' 
   | 'admin'
-  | 'blockchain';
+  | 'blockchain'
+  | 'account';

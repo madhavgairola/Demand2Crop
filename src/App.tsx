@@ -10,6 +10,7 @@ import { DemandDashboard } from './components/demand/DemandDashboard';
 import { HarvestContractView } from './components/contract/HarvestContractView';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { BlockchainExplorer } from './components/blockchain/BlockchainExplorer';
+import { AccountPage } from './components/account/AccountPage';
 import { LandingPage } from './components/landing/LandingPage';
 import { CheckCircle2, AlertCircle, Info, Sparkles, Sprout } from 'lucide-react';
 
@@ -64,6 +65,7 @@ const MainApp: React.FC = () => {
         {activeView === 'contract' && <HarvestContractView />}
         {activeView === 'admin' && <AdminDashboard />}
         {activeView === 'blockchain' && <BlockchainExplorer />}
+        {activeView === 'account' && <AccountPage />}
       </main>
 
       {/* Global Toast Alert */}

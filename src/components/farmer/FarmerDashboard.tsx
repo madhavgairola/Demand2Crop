@@ -28,7 +28,6 @@ import { useApp } from '../../context/AppContext';
 import { CreateHarvestModal } from './CreateHarvestModal';
 import { PartialFulfillmentModal } from './PartialFulfillmentModal';
 import { FarmerReputationModal } from './FarmerReputationModal';
-import { FarmerAccountModal } from './FarmerAccountModal';
 import { LifecycleStage } from '../../types';
 import { FarmerLang, farmerTranslations, stageTranslations } from './farmerTranslations';
 
@@ -113,7 +112,6 @@ export const FarmerDashboard: React.FC = () => {
     farmerProfile
   } = useApp();
 
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPartialOpen, setIsPartialOpen] = useState(false);
   const [isReputationOpen, setIsReputationOpen] = useState(false);
@@ -192,9 +190,9 @@ export const FarmerDashboard: React.FC = () => {
 
           {/* Action Toolbar */}
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            {/* Account & Farm Details Modal Trigger */}
+            {/* Account & Farm Details Page Trigger */}
             <button
-              onClick={() => setIsAccountOpen(true)}
+              onClick={() => setActiveView('account')}
               className="flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
               title={lang === 'hi' ? 'किसान व खेत की जानकारी जोड़ें या बदलें' : 'Add or edit farmer and farm details'}
             >
@@ -654,10 +652,6 @@ export const FarmerDashboard: React.FC = () => {
       </div>
 
       {/* 9. Interactive Modals (passing lang for full Hindi & English experience) */}
-      <FarmerAccountModal 
-        isOpen={isAccountOpen} 
-        onClose={() => setIsAccountOpen(false)} 
-      />
       <CreateHarvestModal 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 

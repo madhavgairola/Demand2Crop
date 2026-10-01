@@ -13,10 +13,9 @@ import { HarvestListing } from '../../types';
 import { evaluateLogisticsFeasibility } from '../../services/logistics';
 import { CROP_METADATA_REGISTRY } from '../../services/cropMetadata';
 import { CommitmentTxModal } from '../checkout/CommitmentTxModal';
-import { BuyerAccountModal } from '../buyer/BuyerAccountModal';
 
 export const Marketplace: React.FC = () => {
-  const { listings, buyerCity, buyerProfile, lang } = useApp();
+  const { listings, buyerCity, buyerProfile, lang, setActiveView } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCropCategory, setSelectedCropCategory] = useState<string>('ALL');
@@ -24,7 +23,6 @@ export const Marketplace: React.FC = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'committed' | 'price' | 'date'>('newest');
 
   const [activeModalListing, setActiveModalListing] = useState<HarvestListing | null>(null);
-  const [isBuyerAccountOpen, setIsBuyerAccountOpen] = useState(false);
 
   // Filter listings
   const filteredListings = listings.filter((listing) => {
@@ -109,16 +107,16 @@ export const Marketplace: React.FC = () => {
 
             {/* Buyer Account & Hub Info Button */}
             <button
-              onClick={() => setIsBuyerAccountOpen(true)}
+              onClick={() => setActiveView('account')}
               className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2.5 text-xs transition cursor-pointer text-left shadow-xs"
-              title={lang === 'hi' ? 'खरीदार प्रोफ़ाइल एवं वेयरहाउस जानकारी देखें / बदलें' : 'View / Edit Buyer Profile & Hub Info'}
+              title="Open Buyer Account & Delivery Hub Page"
             >
               <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-500/30">
                 <User className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-semibold">
-                  {lang === 'hi' ? '👤 खरीदार प्रोफ़ाइल' : '👤 Buyer Account & Hub'}
+                  👤 Buyer Account & Hub
                 </span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {buyerProfile.name} • <span className="text-emerald-600 dark:text-emerald-400 font-normal">{buyerProfile.companyName}</span>
@@ -339,12 +337,6 @@ export const Marketplace: React.FC = () => {
           listing={activeModalListing}
         />
       )}
-
-      {/* Buyer Account & Warehouse Info Modal */}
-      <BuyerAccountModal
-        isOpen={isBuyerAccountOpen}
-        onClose={() => setIsBuyerAccountOpen(false)}
-      />
     </div>
   );
 };
