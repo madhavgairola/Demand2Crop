@@ -14,7 +14,9 @@ import {
   Warehouse, 
   Sprout,
   Sparkles,
-  ShoppingBag
+  ShoppingBag,
+  Award,
+  TrendingUp
 } from 'lucide-react';
 import { useApp, BuyerProfile, FarmerProfile } from '../../context/AppContext';
 import { INDIAN_CITIES } from '../../services/logistics';
@@ -643,25 +645,68 @@ export const AccountPage: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
               <div className="flex items-center space-x-3.5">
-                <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-2xl shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-2xl shadow-sm shrink-0">
                   👨‍🌾
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">{farmerProfile.name}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{farmerProfile.village}, {farmerProfile.district}</p>
+                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-700/50 flex items-center space-x-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                      <span>{isHindi ? 'सत्यापित किसान' : 'Verified Farmer'}</span>
+                    </span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700/40">
+                      {isHindi ? 'सर्वोत्तम मूल्यांकित' : 'Top-Rated'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
-                <div className="flex justify-between py-1">
+              {/* Farmer Trust & Performance Stats */}
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center justify-center text-amber-500 mb-0.5">
+                    <Award className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="font-bold text-xs text-slate-900 dark:text-white font-mono">97/100</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">{isHindi ? 'विश्वास स्कोर' : 'Trust Score'}</div>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center justify-center text-slate-500 mb-0.5">🌾</div>
+                  <div className="font-bold text-xs text-slate-900 dark:text-white font-mono">47</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">{isHindi ? 'सफल फसलें' : 'Harvests'}</div>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center justify-center text-emerald-600 mb-0.5">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="font-bold text-xs text-emerald-700 dark:text-emerald-400 font-mono">96%</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">{isHindi ? 'संतुष्टि दर' : 'Fulfillment'}</div>
+                </div>
+              </div>
+
+              <div className="space-y-2.5 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
+                <div className="flex justify-between py-0.5">
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'स्थान:' : 'Location:'}</span>
+                  <span className="font-semibold text-slate-900 dark:text-white truncate">{farmerProfile.village}, {farmerProfile.district}</span>
+                </div>
+                <div className="flex justify-between py-0.5">
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'फ़ोन नंबर:' : 'Phone:'}</span>
+                  <span className="font-mono text-slate-900 dark:text-white">{farmerProfile.phone}</span>
+                </div>
+                <div className="flex justify-between py-0.5">
                   <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'कृषि भूमि:' : 'Land Area:'}</span>
                   <span className="font-bold text-slate-900 dark:text-white font-mono">{farmerProfile.landSizeAcres} {isHindi ? 'एकड़' : 'Acres'}</span>
                 </div>
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-0.5">
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'सिंचाई व्यवस्था:' : 'Irrigation:'}</span>
+                  <span className="text-slate-900 dark:text-white truncate">{farmerProfile.irrigationMethod}</span>
+                </div>
+                <div className="flex justify-between py-0.5">
                   <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'केसीसी संख्या:' : 'KCC Number:'}</span>
                   <span className="font-mono text-slate-900 dark:text-white text-[11px]">{farmerProfile.kccNumber}</span>
                 </div>
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-0.5">
                   <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'निपटान यूपीआई:' : 'Settlement UPI:'}</span>
                   <span className="font-mono text-slate-900 dark:text-white text-[11px]">{farmerProfile.upiId}</span>
                 </div>

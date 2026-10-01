@@ -74,54 +74,31 @@ export const Marketplace: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header & Logistics Feasibility Alert */}
+      {/* Header & Delivery Info */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4 transition-colors duration-150">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-slate-900 dark:text-white font-mono">
-                Agri<span className="text-emerald-700 dark:text-emerald-400">Market</span>
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800 uppercase">
-                Demand-Driven Forward Exchange
-              </span>
-            </div>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+              {lang === 'hi' ? 'फसल बाज़ार' : 'Crop Marketplace'}
+            </h1>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-              Pre-commit to verified farmer harvests before sowing. Lock lower forward prices with smart-contract escrow security.
+              {lang === 'hi' 
+                ? 'सत्यापित किसानों से सीधी ताज़ा फसलें देखें और अग्रिम ऑर्डर बुक करें।' 
+                : 'Browse fresh harvests directly from verified farmers and pre-order quality crops.'}
             </p>
           </div>
 
-          {/* Active Delivery Destination & Buyer Account Info */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="bg-slate-50 dark:bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2.5 text-xs">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-500/30">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-semibold">
-                  {lang === 'hi' ? 'डिलीवरी गंतव्य' : 'Delivery Destination'}
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">{buyerCity} Metropolitan Corridor</span>
-              </div>
-            </div>
-
-            {/* Buyer Account & Hub Info Button */}
+          {/* Clean Delivery Destination Pill */}
+          <div className="flex items-center space-x-2 bg-slate-50 dark:bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+            <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-slate-600 dark:text-slate-400">
+              {lang === 'hi' ? 'डिलीवरी:' : 'Delivering to:'} <strong className="text-slate-900 dark:text-white font-semibold">{buyerCity}</strong>
+            </span>
             <button
               onClick={() => setActiveView('account')}
-              className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center space-x-2.5 text-xs transition cursor-pointer text-left shadow-xs"
-              title="Open Buyer Account & Delivery Hub Page"
+              className="ml-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold hover:underline"
             >
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-500/30">
-                <User className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-semibold">
-                  👤 Buyer Account & Hub
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {buyerProfile.name} • <span className="text-emerald-600 dark:text-emerald-400 font-normal">{buyerProfile.companyName}</span>
-                </span>
-              </div>
+              {lang === 'hi' ? 'बदलें' : 'Change'}
             </button>
           </div>
         </div>
@@ -317,10 +294,10 @@ export const Marketplace: React.FC = () => {
                   <Lock className="w-3.5 h-3.5" />
                   <span>
                     {remainingKg <= 0
-                      ? '100% PRE-COMMITTED'
+                      ? (lang === 'hi' ? 'पूर्णतः अग्रिम बुक (100%)' : 'Sold Out / Pre-Booked')
                       : !logistics.isFeasible
-                        ? 'PERISHABILITY EXCEEDED'
-                        : `PRE-COMMIT / BUY (₹${listing.pricePerKg}/kg)`}
+                        ? (lang === 'hi' ? 'परिवहन सीमा पार' : 'Transit Feasibility Risk')
+                        : (lang === 'hi' ? `अग्रिम ऑर्डर बुक करें (₹${listing.pricePerKg}/किग्रा)` : `Pre-Order / Buy (₹${listing.pricePerKg}/kg)`)}
                   </span>
                 </button>
               </div>

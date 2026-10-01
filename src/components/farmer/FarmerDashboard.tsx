@@ -136,12 +136,12 @@ export const FarmerDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* 1. Farmer Profile Header & Accessibility Toolbar */}
+      {/* 1. Farmer Profile Header */}
       <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 md:p-6 shadow-sm transition-colors duration-150">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
-          {/* Farmer Avatar & Info */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {/* Farmer Avatar & Name & Badges */}
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-sm text-white shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-sm text-white shrink-0">
               👨‍🌾
             </div>
             <div>
@@ -157,50 +157,12 @@ export const FarmerDashboard: React.FC = () => {
                   {t.scoreExcellent}
                 </span>
               </div>
-
-              <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1.5 mt-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>{farmerProfile.village}, {farmerProfile.district}, {farmerProfile.state}</span>
-                <span className="text-slate-300 dark:text-slate-700">|</span>
-                <span className="text-slate-500 dark:text-slate-400 font-mono">{farmerProfile.phone}</span>
-              </p>
-
-              {/* Stat Chips */}
-              <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-600 dark:text-slate-400">
-                <span className="flex items-center space-x-1">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  <span>{t.reputationScore}:</span>
-                  <strong className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">97/100</strong>
-                </span>
-                <span>•</span>
-                <span className="flex items-center space-x-1">
-                  <span>🌾</span>
-                  <span>{t.completedHarvests}:</span>
-                  <strong className="text-slate-900 dark:text-white font-mono font-bold">47</strong>
-                </span>
-                <span>•</span>
-                <span className="flex items-center space-x-1">
-                  <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>{t.fulfillmentRate}:</span>
-                  <strong className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">96%</strong>
-                </span>
-              </div>
             </div>
           </div>
 
           {/* Action Toolbar */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            {/* Account & Farm Details Page Trigger */}
-            <button
-              onClick={() => setActiveView('account')}
-              className="flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
-              title={lang === 'hi' ? 'किसान व खेत की जानकारी जोड़ें या बदलें' : 'Add or edit farmer and farm details'}
-            >
-              <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>{lang === 'hi' ? '👤 खाता व खेत जानकारी' : '👤 Account & Farm Info'}</span>
-            </button>
-
-            {/* Scorecard Button */}
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+            {/* View Trust Card Button */}
             <button
               onClick={() => setIsReputationOpen(true)}
               className="flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
@@ -209,7 +171,7 @@ export const FarmerDashboard: React.FC = () => {
               <span>{t.viewReputation}</span>
             </button>
 
-            {/* Add Harvest Button */}
+            {/* Add New Harvest Button */}
             <button
               onClick={() => setIsCreateOpen(true)}
               className="flex items-center justify-center space-x-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
@@ -217,69 +179,6 @@ export const FarmerDashboard: React.FC = () => {
               <Plus className="w-4 h-4" />
               <span>{t.createListing}</span>
             </button>
-          </div>
-        </div>
-
-        {/* Farm & Operational Infrastructure Details (Making the card longer length wise) */}
-        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
-            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
-              <span className="text-base">🚜</span>
-              <span>{lang === 'hi' ? 'कुल कृषि भूमि' : 'Cultivable Land'}</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
-                {farmerProfile.landSizeAcres} {lang === 'hi' ? 'एकड़' : 'Acres'}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={farmerProfile.soilType}>
-                {farmerProfile.soilType}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
-            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
-              <span className="text-base">💧</span>
-              <span>{lang === 'hi' ? 'सिंचाई व्यवस्था' : 'Irrigation System'}</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white truncate" title={farmerProfile.irrigationMethod}>
-                {farmerProfile.irrigationMethod}
-              </div>
-              <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                {lang === 'hi' ? 'सदाबहार सुनिश्चित आपूर्ति' : 'Assured Year-Round'}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
-            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
-              <span className="text-base">📜</span>
-              <span>{lang === 'hi' ? 'केसीसी कार्ड' : 'KCC Credential'}</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
-                {farmerProfile.kccNumber}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                {lang === 'hi' ? 'सरकारी बायोमेट्रिक सत्यापित' : 'Govt Biometric Verified'}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
-            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
-              <span className="text-base">🏦</span>
-              <span>{lang === 'hi' ? 'सीधा भुगतान बैंक' : 'Settlement Bank'}</span>
-            </div>
-            <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white truncate" title={farmerProfile.bankAccount}>
-                {farmerProfile.bankAccount}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                {farmerProfile.upiId}
-              </div>
-            </div>
           </div>
         </div>
       </div>
