@@ -122,7 +122,6 @@ export const FarmerDashboard: React.FC = () => {
   const t = farmerTranslations[lang];
 
   const [selectedListingId, setSelectedListingId] = useState<string>('');
-  const [hoveredListingId, setHoveredListingId] = useState<string | null>(null);
   const [detailsModalListing, setDetailsModalListing] = useState<HarvestListing | null>(null);
 
   // Farmer's listings
@@ -579,7 +578,7 @@ export const FarmerDashboard: React.FC = () => {
             <span>{t.allListingsTitle} ({listings.length})</span>
           </h3>
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            {lang === 'hi' ? 'विवरण देखने के लिए किसी भी फसल पर होवर या क्लिक करें' : 'Hover or click any card for details'}
+            {lang === 'hi' ? 'पूरा विवरण देखने के लिए किसी भी फसल पर क्लिक करें' : 'Click any crop to view full details'}
           </span>
         </div>
 
@@ -589,23 +588,17 @@ export const FarmerDashboard: React.FC = () => {
             const cropHindi = CROP_HINDI_NAMES[listing.crop] || listing.crop;
             const itemCommittedPct = Math.min(100, Math.round((listing.committedQuantityKg / listing.expectedQuantityKg) * 100));
             const isSelected = listing.id === primaryListing.id;
-            const isHovered = hoveredListingId === listing.id;
 
             return (
               <div
                 key={listing.id}
-                onMouseEnter={() => setHoveredListingId(listing.id)}
-                onMouseLeave={() => setHoveredListingId(null)}
-                onClick={() => {
-                  setSelectedListingId(listing.id);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={`relative bg-white dark:bg-slate-900 border rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-xs ${
+                onClick={() => setDetailsModalListing(listing)}
+                className={`bg-white dark:bg-slate-900 border rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-xs hover:shadow-md ${
                   isSelected 
                     ? 'border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-50/20 dark:bg-emerald-950/20' 
-                    : 'border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600/50 hover:shadow-md'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600/50'
                 }`}
-                title={lang === 'hi' ? 'विवरण देखने व प्रबंधन करने के लिए क्लिक करें' : 'Click to select and manage this harvest'}
+                title={lang === 'hi' ? 'पूरा विवरण देखने के लिए क्लिक करें' : 'Click to view full details in modal'}
               >
                 {/* 1. Crop Name & Cost (Clean minimalist face) */}
                 <div className="flex items-center justify-between mb-3">
@@ -635,18 +628,10 @@ export const FarmerDashboard: React.FC = () => {
                     <span>
                       {t.committedLabel}: <strong className="text-emerald-700 dark:text-emerald-400 font-mono">{itemCommittedPct}%</strong>
                     </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDetailsModalListing(listing);
-                      }}
-                      className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center space-x-1"
-                      title={lang === 'hi' ? 'पूरा विवरण देखें' : 'View full details'}
-                    >
+                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 flex items-center space-x-1">
                       <span>{t.viewDetailsBtn}</span>
                       <Info className="w-3 h-3" />
-                    </button>
+                    </span>
                   </div>
                   <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
                     <div
@@ -655,137 +640,151 @@ export const FarmerDashboard: React.FC = () => {
                     />
                   </div>
                 </div>
-
-                {/* Hover Tab Popover (Opens cleanly on Hover) */}
-                {isHovered && (
-                  <div className="absolute left-0 right-0 top-full mt-1.5 z-40 p-4 bg-white dark:bg-slate-900 border border-emerald-400 dark:border-emerald-600/50 rounded-xl shadow-xl space-y-2.5 text-xs animate-fade-in pointer-events-auto">
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                      <div>
-                        <span className="font-bold text-slate-900 dark:text-white">
-                          {lang === 'hi' ? cropHindi : listing.crop}
-                        </span>
-                        <span className="text-slate-500 dark:text-slate-400 ml-1.5 font-mono text-[11px]">
-                          ({listing.variety})
-                        </span>
-                      </div>
-                      <span className="font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
-                        {listing.contractId}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-300">
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.locationLabel}</span>
-                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate block">
-                          {listing.farmerLocation}, {listing.farmerState}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.harvestLabel}</span>
-                        <span className="font-medium text-slate-800 dark:text-slate-200">{listing.expectedHarvestDate}</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.targetLabel}</span>
-                        <span className="font-medium text-slate-800 dark:text-slate-200 font-mono">{listing.expectedQuantityKg.toLocaleString()} kg</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.committedLabel}</span>
-                        <span className="font-medium text-emerald-700 dark:text-emerald-400 font-mono">{listing.committedQuantityKg.toLocaleString()} kg</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                      <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
-                        {listing.advancePayoutPct || 30}% {lang === 'hi' ? 'अग्रिम पूंजी' : 'seed advance'}
-                      </span>
-                      <span className="text-[11px] text-slate-400 flex items-center space-x-1">
-                        <span>{t.selectToManage}</span>
-                        <ArrowRight className="w-3 h-3 text-emerald-600" />
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Click Details Modal for Farmer Dashboard Listings */}
+      {/* Centered Details Modal / Tab for Farmer Dashboard Listings */}
       {detailsModalListing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex items-center space-x-2.5">
-                <span className="text-2xl">{CROP_ICONS[detailsModalListing.crop] || '🌱'}</span>
+        <div 
+          onClick={() => setDetailsModalListing(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 dark:bg-slate-950/85 backdrop-blur-sm animate-fade-in"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 flex items-center justify-center text-2xl border border-emerald-300 dark:border-emerald-800">
+                  {CROP_ICONS[detailsModalListing.crop] || '🌱'}
+                </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                    {lang === 'hi' ? CROP_HINDI_NAMES[detailsModalListing.crop] || detailsModalListing.crop : detailsModalListing.crop}
-                  </h3>
-                  <p className="text-xs text-slate-500 font-mono">{detailsModalListing.variety}</p>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                      {lang === 'hi' ? CROP_HINDI_NAMES[detailsModalListing.crop] || detailsModalListing.crop : detailsModalListing.crop}
+                    </h3>
+                    <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      {detailsModalListing.contractId}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                    {detailsModalListing.variety} • {detailsModalListing.qualityGrade}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => setDetailsModalListing(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-5 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.guaranteedPrice}</span>
-                  <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">₹{detailsModalListing.pricePerKg} / kg</span>
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+              {/* 4 Key Metric Cards */}
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">{t.guaranteedPrice}</span>
+                  <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">₹{detailsModalListing.pricePerKg} / kg</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Fixed Agreement Rate</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.harvestLabel}</span>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{detailsModalListing.expectedHarvestDate}</span>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">{t.harvestLabel}</span>
+                  <span className="text-base font-semibold text-slate-800 dark:text-slate-200">{detailsModalListing.expectedHarvestDate}</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Scheduled Delivery</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.committedDemand}</span>
-                  <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.committedQuantityKg} kg</span>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">{t.committedDemand}</span>
+                  <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.committedQuantityKg.toLocaleString()} kg</span>
+                  <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">
+                    {Math.round((detailsModalListing.committedQuantityKg / detailsModalListing.expectedQuantityKg) * 100)}% Pre-Sold
+                  </span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.totalQuantity}</span>
-                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-slate-200">{detailsModalListing.expectedQuantityKg} kg</span>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">{t.totalQuantity}</span>
+                  <span className="text-base font-bold font-mono text-slate-800 dark:text-slate-200">{detailsModalListing.expectedQuantityKg.toLocaleString()} kg</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Total Expected Yield</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
-                <span className="font-semibold text-emerald-900 dark:text-emerald-300">
-                  {lang === 'hi' ? 'अग्रिम पूंजी सहायता:' : 'Growing Advance Rate:'} {detailsModalListing.advancePayoutPct || 30}%
-                </span>
-                <p className="text-emerald-800/80 dark:text-emerald-400 text-[11px]">
+              {/* Upfront Growing Capital Advance Box */}
+              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/80 space-y-1.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-900 dark:text-emerald-300">
+                    💰 {lang === 'hi' ? 'बुवाई अग्रिम पूंजी:' : 'Upfront Growing Capital:'} {detailsModalListing.advancePayoutPct || 30}%
+                  </span>
+                  <span className="font-mono font-bold text-emerald-800 dark:text-emerald-300 text-sm">
+                    ₹{Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30) / 100)).toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-emerald-800/90 dark:text-emerald-400 text-[11px] leading-relaxed">
                   {lang === 'hi' 
-                    ? `बुवाई होते ही ₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30)/100)).toLocaleString()} की पूंजी सीधे खाते में जारी होगी।`
-                    : `₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30)/100)).toLocaleString()} eligible for seed & fertilizer release upon sowing.`}
+                    ? `बुवाई का चरण चिह्नित करते ही ₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30) / 100)).toLocaleString()} (${detailsModalListing.advancePayoutPct || 30}% अग्रिम राशि) बिना किसी ब्याज या कर्ज के सीधे आपके बैंक खाते में जारी होगी।`
+                    : `Upon entering the sowing/growing milestone, ₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30) / 100)).toLocaleString()} (${detailsModalListing.advancePayoutPct || 30}%) is unlocked immediately for certified seeds & fertilizer.`}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between text-slate-500 pt-1">
-                <span>{detailsModalListing.farmerLocation}, {detailsModalListing.farmerState}</span>
-                <span className="font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.contractId}</span>
+              {/* Location & Godown Hub Info */}
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">{t.locationLabel}:</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.farmerLocation}, {detailsModalListing.farmerState}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">{t.assignedHubLabel}:</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.darkStoreName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">{lang === 'hi' ? 'शेल्फ-लाइफ एवं शेल्फ विवरण:' : 'Storage & Shelf Life:'}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.shelfLife}</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              {detailsModalListing.description && (
+                <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 block mb-1">{t.descriptionLabel}:</span>
+                  <p>{detailsModalListing.description}</p>
+                </div>
+              )}
+
+              {/* Escrow Guarantee */}
+              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <span className="flex items-center space-x-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>{lang === 'hi' ? '100% बैंक एस्क्रो द्वारा सुरक्षित' : '100% Smart Contract Escrow Protected'}</span>
+                </span>
+                <span className="font-mono text-slate-400 truncate max-w-[180px]">
+                  {detailsModalListing.contractAddress}
+                </span>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-end space-x-2">
+            {/* Modal Actions */}
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-end space-x-3">
               <button
+                type="button"
                 onClick={() => setDetailsModalListing(null)}
-                className="px-3.5 py-1.5 rounded-lg text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 {t.hideDetailsBtn}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setSelectedListingId(detailsModalListing.id);
                   setDetailsModalListing(null);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm flex items-center space-x-2"
               >
-                {t.selectToManage}
+                <span>{t.selectToManage}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
