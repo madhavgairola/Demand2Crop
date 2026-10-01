@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Sprout, 
   Plus, 
@@ -22,7 +22,9 @@ import {
   Info,
   Scale,
   Warehouse,
-  User
+  User,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CreateHarvestModal } from './CreateHarvestModal';
@@ -133,6 +135,49 @@ export const FarmerDashboard: React.FC = () => {
   const initialWorkingCapital = Math.round((primaryListing.committedQuantityKg * primaryListing.pricePerKg) * 0.3);
 
   const currentStageIndex = STAGE_ORDER.indexOf(primaryListing.stage);
+
+  // Stepper Horizontal Scroll State & Auto-centering
+  const stepperRef = useRef<HTMLDivElement>(null);
+  const activeStepRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollBounds = () => {
+    if (stepperRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = stepperRef.current;
+      setCanScrollLeft(scrollLeft > 10);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+    }
+  };
+
+  const scrollStepper = (direction: 'left' | 'right') => {
+    if (stepperRef.current) {
+      const scrollAmount = Math.max(220, Math.round(stepperRef.current.clientWidth * 0.65));
+      stepperRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+      setTimeout(checkScrollBounds, 350);
+    }
+  };
+
+  // Center active step in viewport smoothly on load or stage change
+  useEffect(() => {
+    if (activeStepRef.current && stepperRef.current) {
+      const container = stepperRef.current;
+      const activeEl = activeStepRef.current;
+      const targetScroll = activeEl.offsetLeft - (container.clientWidth / 2) + (activeEl.clientWidth / 2);
+      container.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
+      setTimeout(checkScrollBounds, 350);
+    }
+  }, [primaryListing.stage, primaryListing.id]);
+
+  useEffect(() => {
+    checkScrollBounds();
+    const handleResize = () => checkScrollBounds();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -389,7 +434,7 @@ export const FarmerDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 7. Crop Lifecycle Interactive Stepper (All 10 Stages with Icons) */}
+        {/* 7. Crop Lifecycle Interactive Stepper (Single Scrollable Row with Navigation Arrows) */}
         <div className="p-5 md:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -398,70 +443,118 @@ export const FarmerDashboard: React.FC = () => {
                 <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 font-bold">
                   {stageTranslations[primaryListing.stage] ? stageTranslations[primaryListing.stage][lang].label : primaryListing.stage}
                 </span>
+                <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
+                  ({currentStageIndex + 1}/{STAGE_ORDER.length})
+                </span>
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 {t.lifecycleSubtitle}
               </p>
             </div>
 
-            {/* Quick Next Stage Advance Action Button */}
-            {currentStageIndex < STAGE_ORDER.length - 1 && (
-              <button
-                onClick={() => {
-                  const nextStage = STAGE_ORDER[currentStageIndex + 1];
-                  advanceListingStage(primaryListing.id, nextStage);
-                }}
-                className="flex items-center justify-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm shrink-0"
-              >
-                <span>
-                  {t.nextStageButton}: {stageTranslations[STAGE_ORDER[currentStageIndex + 1]][lang].label}
-                </span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            )}
+            {/* Quick Next Stage Advance Action Button & Stepper Nav Arrows */}
+            <div className="flex items-center gap-2">
+              {currentStageIndex < STAGE_ORDER.length - 1 && (
+                <button
+                  onClick={() => {
+                    const nextStage = STAGE_ORDER[currentStageIndex + 1];
+                    advanceListingStage(primaryListing.id, nextStage);
+                  }}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm shrink-0"
+                >
+                  <span>
+                    {t.nextStageButton}: {stageTranslations[STAGE_ORDER[currentStageIndex + 1]][lang].label}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Stepper Grid (10 Stages: 5 per row on desktop) */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2">
-            {STAGE_ORDER.map((stageKey, actualIdx) => {
-              const stepInfo = stageTranslations[stageKey][lang];
-              const isPassed = actualIdx <= currentStageIndex;
-              const isCurrent = actualIdx === currentStageIndex;
-              const stageIcon = STAGE_ICONS[stageKey];
+          {/* Stepper Single Row with Navigation Arrows on Either Side */}
+          <div className="relative flex items-center gap-2 pt-1">
+            {/* Left Move Arrow */}
+            <button
+              type="button"
+              onClick={() => scrollStepper('left')}
+              disabled={!canScrollLeft}
+              className={`w-9 h-9 shrink-0 rounded-xl border flex items-center justify-center transition shadow-xs ${
+                canScrollLeft
+                  ? 'bg-white hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer'
+                  : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
+              }`}
+              title={lang === 'hi' ? 'पीछे के चरण देखें' : 'Move to previous steps'}
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-              return (
-                <div
-                  key={stageKey}
-                  onClick={() => advanceListingStage(primaryListing.id, stageKey)}
-                  className={`p-3 rounded-xl border transition cursor-pointer select-none ${
-                    isCurrent
-                      ? 'bg-emerald-50 border-emerald-600 ring-2 ring-emerald-600/30 text-emerald-950 dark:bg-emerald-950/60 dark:border-emerald-500 shadow-xs'
-                      : isPassed
-                        ? 'bg-white border-emerald-300 text-slate-800 dark:bg-slate-950 dark:border-emerald-800/60 dark:text-slate-300'
-                        : 'bg-slate-50 border-slate-200 text-slate-400 dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-500 hover:border-slate-300'
-                  }`}
-                  title={lang === 'hi' ? `${stepInfo.label} चरण पर सेट करें` : `Click to update to ${stepInfo.label}`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-base">{stageIcon}</span>
-                    <span className="text-[10px] font-mono font-semibold uppercase text-slate-500 dark:text-slate-400">
-                      {t.phaseLabel} {actualIdx + 1}
-                    </span>
-                    {isPassed ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-                    )}
+            {/* Single Horizontal Scrollable Row */}
+            <div
+              ref={stepperRef}
+              onScroll={checkScrollBounds}
+              className="flex-1 flex items-stretch space-x-3 overflow-x-auto scroll-smooth py-1.5 px-0.5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {STAGE_ORDER.map((stageKey, actualIdx) => {
+                const stepInfo = stageTranslations[stageKey][lang];
+                const isPassed = actualIdx <= currentStageIndex;
+                const isCurrent = actualIdx === currentStageIndex;
+                const stageIcon = STAGE_ICONS[stageKey];
+
+                return (
+                  <div
+                    key={stageKey}
+                    ref={isCurrent ? activeStepRef : null}
+                    onClick={() => advanceListingStage(primaryListing.id, stageKey)}
+                    className={`w-52 sm:w-56 shrink-0 p-3.5 rounded-xl border transition cursor-pointer select-none flex flex-col justify-between ${
+                      isCurrent
+                        ? 'bg-emerald-50 border-emerald-600 ring-2 ring-emerald-600/30 text-emerald-950 dark:bg-emerald-950/60 dark:border-emerald-500 shadow-xs'
+                        : isPassed
+                          ? 'bg-white border-emerald-300 text-slate-800 dark:bg-slate-950 dark:border-emerald-800/60 dark:text-slate-300 hover:border-emerald-400'
+                          : 'bg-slate-50 border-slate-200 text-slate-400 dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-500 hover:border-slate-300'
+                    }`}
+                    title={lang === 'hi' ? `${stepInfo.label} चरण पर सेट करें` : `Click to update to ${stepInfo.label}`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xl">{stageIcon}</span>
+                        <span className="text-[10px] font-mono font-semibold uppercase text-slate-500 dark:text-slate-400">
+                          {t.phaseLabel} {actualIdx + 1}
+                        </span>
+                        {isPassed ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                        )}
+                      </div>
+                      <div className={`text-xs font-bold leading-tight ${isCurrent ? 'text-emerald-800 dark:text-emerald-300' : isPassed ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
+                        {stepInfo.label}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                        {stepInfo.desc}
+                      </div>
+                    </div>
                   </div>
-                  <div className={`text-xs font-bold leading-tight ${isCurrent ? 'text-emerald-800 dark:text-emerald-300' : isPassed ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
-                    {stepInfo.label}
-                  </div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">
-                    {stepInfo.desc}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Right Move Arrow */}
+            <button
+              type="button"
+              onClick={() => scrollStepper('right')}
+              disabled={!canScrollRight}
+              className={`w-9 h-9 shrink-0 rounded-xl border flex items-center justify-center transition shadow-xs ${
+                canScrollRight
+                  ? 'bg-white hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer'
+                  : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
+              }`}
+              title={lang === 'hi' ? 'आगे के चरण देखें' : 'Move to next steps'}
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
