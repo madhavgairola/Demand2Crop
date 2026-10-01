@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { 
   Layers, 
   Search, 
-  CheckCircle2
+  CheckCircle2,
+  Zap,
+  Copy,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const BlockchainExplorer: React.FC = () => {
-  const { blocks, transactions } = useApp();
+  const { blocks, transactions, mineTestBlock } = useApp();
 
   const [searchFilter, setSearchFilter] = useState('');
+  const [copiedContract, setCopiedContract] = useState(false);
 
   const filteredTxs = transactions.filter(
     (tx) =>
@@ -19,18 +24,55 @@ export const BlockchainExplorer: React.FC = () => {
       tx.details.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
+  const handleCopyContract = () => {
+    navigator.clipboard.writeText('0x88912e7bb014389012a6cb82e99f018349071241');
+    setCopiedContract(true);
+    setTimeout(() => setCopiedContract(false), 2000);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-2 transition-colors duration-150">
-        <div className="flex items-center space-x-2">
-          <Layers className="w-6 h-6 text-emerald-600 dark:text-cyan-400" />
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Demand2Crop Distributed Ledger Explorer</h2>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-3 transition-colors duration-150">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center space-x-2">
+                <Layers className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Demand2Crop Distributed Ledger Explorer</h2>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300 dark:border-purple-700/50 flex items-center space-x-1 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Polygon Amoy (80002)</span>
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl">
+              Zero-Knowledge Proof & EVM consensus layer recording forward crop commitments, non-custodial escrow balances,
+              quality inspection oracle stamps, and partial settlement disbursements.
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleCopyContract}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
+              title="Copy Escrow Contract Address"
+            >
+              <Copy className="w-3.5 h-3.5 text-purple-500" />
+              <span>{copiedContract ? 'Copied 0x8891...' : 'Contract 0x8891...'}</span>
+            </button>
+
+            <button
+              onClick={mineTestBlock}
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition shadow-sm"
+              title="Simulate mining a new block on Polygon Amoy"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-300" />
+              <span>Mine Block</span>
+            </button>
+          </div>
         </div>
-        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl">
-          Zero-Knowledge Proof & EVM consensus layer recording forward crop commitments, non-custodial escrow balances,
-          quality inspection oracle stamps, and partial settlement disbursements.
-        </p>
       </div>
 
       {/* Network Live Stats */}

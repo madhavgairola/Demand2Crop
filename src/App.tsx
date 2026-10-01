@@ -12,10 +12,11 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { BlockchainExplorer } from './components/blockchain/BlockchainExplorer';
 import { AccountPage } from './components/account/AccountPage';
 import { LandingPage } from './components/landing/LandingPage';
+import { NodeTerminal } from './components/blockchain/NodeTerminal';
 import { CheckCircle2, AlertCircle, Info, Sparkles, Sprout } from 'lucide-react';
 
 const MainApp: React.FC = () => {
-  const { activeView, toast } = useApp();
+  const { activeView, toast, isWeb3Mode } = useApp();
 
   if (activeView === 'landing') {
     return (
@@ -107,6 +108,9 @@ const MainApp: React.FC = () => {
           </p>
         </div>
       </footer>
+
+      {/* Live Polygon EVM Node Terminal (Rendered in /test mode) */}
+      {isWeb3Mode && <NodeTerminal />}
     </div>
   );
 };
