@@ -6,7 +6,8 @@ import {
   ArrowRight, 
   CheckCircle2, 
   Clock, 
-  Truck
+  Truck,
+  AlertTriangle
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { HarvestListing } from '../../types';
@@ -202,6 +203,17 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
               </div>
             </div>
 
+            {/* Logistics Violation Alert if Infeasible */}
+            {!logistics.isFeasible && (
+              <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 rounded-xl p-3.5 flex items-start space-x-3 text-xs text-rose-950 dark:text-rose-200">
+                <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-bold block">Logistics Feasibility Violation: Purchase Blocked</span>
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{logistics.reason}</p>
+                </div>
+              </div>
+            )}
+
             {/* Submit Action */}
             <div className="pt-2 flex items-center justify-end space-x-3">
               <button
@@ -213,11 +225,22 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
               </button>
               <button
                 type="button"
+                disabled={!logistics.isFeasible}
                 onClick={handleConfirmPreCommit}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm flex items-center space-x-2"
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-2 ${
+                  !logistics.isFeasible
+                    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800 cursor-not-allowed'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                }`}
               >
-                <Lock className="w-4 h-4" />
-                <span>PRE-COMMIT / BUY (LOCK ESCROW)</span>
+                {!logistics.isFeasible ? (
+                  <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                ) : (
+                  <Lock className="w-4 h-4" />
+                )}
+                <span>
+                  {!logistics.isFeasible ? 'TRANSIT CORRIDOR BLOCKED' : 'PRE-COMMIT / BUY (LOCK ESCROW)'}
+                </span>
               </button>
             </div>
           </div>

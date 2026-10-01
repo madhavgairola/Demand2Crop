@@ -10,7 +10,8 @@ import {
   Info,
   X,
   ShieldCheck,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { HarvestListing } from '../../types';
@@ -247,207 +248,235 @@ export const Marketplace: React.FC = () => {
                 </div>
               </div>
 
-              {/* 4. Action Button */}
-              <div className="p-4 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveModalListing(listing);
-                  }}
-                  disabled={remainingKg <= 0 || !logistics.isFeasible}
-                  className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${
-                    remainingKg <= 0
-                      ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
-                      : !logistics.isFeasible
-                        ? 'bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-slate-800 dark:text-rose-300'
-                        : isRaviListing
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                          : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm'
-                  }`}
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>
-                    {remainingKg <= 0
-                      ? (lang === 'hi' ? 'पूर्णतः अग्रिम बुक (100%)' : 'Sold Out / Pre-Booked')
-                      : !logistics.isFeasible
-                        ? (lang === 'hi' ? 'परिवहन सीमा पार' : 'Transit Feasibility Risk')
-                        : (lang === 'hi' ? `अग्रिम ऑर्डर बुक करें (₹${listing.pricePerKg}/किग्रा)` : `Pre-Order / Buy (₹${listing.pricePerKg}/kg)`)}
-                  </span>
-                </button>
+                {/* 4. Action Button */}
+                <div className="p-4 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!logistics.isFeasible) {
+                        setDetailsModalListing(listing);
+                      } else {
+                        setActiveModalListing(listing);
+                      }
+                    }}
+                    disabled={remainingKg <= 0}
+                    className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition ${
+                      remainingKg <= 0
+                        ? 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
+                        : !logistics.isFeasible
+                          ? 'bg-rose-100 text-rose-800 hover:bg-rose-200 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800'
+                          : isRaviListing
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                            : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm'
+                    }`}
+                  >
+                    {!logistics.isFeasible ? (
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                    ) : (
+                      <Lock className="w-3.5 h-3.5" />
+                    )}
+                    <span>
+                      {remainingKg <= 0
+                        ? (lang === 'hi' ? 'पूर्णतः अग्रिम बुक (100%)' : 'Sold Out / Pre-Booked')
+                        : !logistics.isFeasible
+                          ? (lang === 'hi' ? 'परिवहन जोखिम (अमान्य)' : 'Transit Feasibility Risk (Blocked)')
+                          : (lang === 'hi' ? `अग्रिम ऑर्डर बुक करें (₹${listing.pricePerKg}/किग्रा)` : `Pre-Order / Buy (₹${listing.pricePerKg}/kg)`)}
+                    </span>
+                  </button>
+                </div>
               </div>
-            </div>
-          );
+            );
         })}
       </div>
 
       {/* Centered Details Modal / Tab for Buyers */}
-      {detailsModalListing && (
-        <div 
-          onClick={() => setDetailsModalListing(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 dark:bg-slate-950/85 backdrop-blur-sm animate-fade-in"
-        >
+      {detailsModalListing && (() => {
+        const modalLogistics = evaluateLogisticsFeasibility(
+          detailsModalListing.crop,
+          detailsModalListing.farmerLocation,
+          buyerCity,
+          100
+        );
+        const remainingKg = Math.max(0, detailsModalListing.expectedQuantityKg - detailsModalListing.committedQuantityKg);
+
+        return (
           <div 
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in"
+            onClick={() => setDetailsModalListing(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 dark:bg-slate-950/85 backdrop-blur-sm animate-fade-in"
           >
-            {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 flex items-center justify-center text-2xl border border-emerald-300 dark:border-emerald-800">
-                  {CROP_METADATA_REGISTRY[detailsModalListing.crop]?.icon || '🌱'}
-                </div>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      {detailsModalListing.crop}
-                    </h3>
-                    <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                      {detailsModalListing.contractId}
-                    </span>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 flex items-center justify-center text-2xl border border-emerald-300 dark:border-emerald-800">
+                    {CROP_METADATA_REGISTRY[detailsModalListing.crop]?.icon || '🌱'}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                    {detailsModalListing.variety} • {detailsModalListing.qualityGrade}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setDetailsModalListing(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-              {/* 4 Metric Cards */}
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Fixed Pre-Order Price</span>
-                  <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">₹{detailsModalListing.pricePerKg} / kg</span>
-                  <span className="text-[10px] text-slate-500 block mt-0.5">Escrow Guaranteed</span>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Expected Harvest</span>
-                  <span className="text-base font-semibold text-slate-800 dark:text-slate-200">{detailsModalListing.expectedHarvestDate}</span>
-                  <span className="text-[10px] text-slate-500 block mt-0.5">Delivery Ready Date</span>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Committed by Buyers</span>
-                  <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.committedQuantityKg.toLocaleString()} kg</span>
-                  <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">
-                    {Math.round((detailsModalListing.committedQuantityKg / detailsModalListing.expectedQuantityKg) * 100)}% Booked
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Remaining Available</span>
-                  <span className="text-base font-bold font-mono text-slate-800 dark:text-slate-200">
-                    {Math.max(0, detailsModalListing.expectedQuantityKg - detailsModalListing.committedQuantityKg).toLocaleString()} kg
-                  </span>
-                  <span className="text-[10px] text-slate-500 block mt-0.5">Open to Pre-Commit</span>
-                </div>
-              </div>
-
-              {/* Logistics Feasibility Corridor */}
-              {(() => {
-                const modalLogistics = evaluateLogisticsFeasibility(
-                  detailsModalListing.crop,
-                  detailsModalListing.farmerLocation,
-                  buyerCity,
-                  100
-                );
-                return (
-                  <div className={`p-4 rounded-xl border text-xs space-y-2 ${
-                    modalLogistics.isFeasible
-                      ? 'bg-emerald-50/70 border-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-800/80 text-emerald-950 dark:text-slate-200'
-                      : 'bg-rose-50 border-rose-300 text-rose-950 dark:bg-rose-950/30 dark:border-rose-800/80 dark:text-rose-200'
-                  }`}>
-                    <div className="flex items-center justify-between font-bold">
-                      <span className="flex items-center space-x-1.5">
-                        <Truck className={`w-4 h-4 ${modalLogistics.isFeasible ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`} />
-                        <span>Logistics Corridor: {detailsModalListing.farmerLocation} → {buyerCity} ({modalLogistics.distanceKm} km)</span>
-                      </span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                        modalLogistics.isFeasible 
-                          ? 'bg-emerald-200 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' 
-                          : 'bg-rose-200 text-rose-900 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-700'
-                      }`}>
-                        {modalLogistics.isFeasible ? 'FEASIBLE ✓' : 'LOGISTICS RISK ⚠️'}
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                        {detailsModalListing.crop}
+                      </h3>
+                      <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        {detailsModalListing.contractId}
                       </span>
                     </div>
-                    <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-                      {modalLogistics.reason}
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                      {detailsModalListing.variety} • {detailsModalListing.qualityGrade}
                     </p>
                   </div>
-                );
-              })()}
+                </div>
+                <button
+                  onClick={() => setDetailsModalListing(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-              {/* Farmer and Hub Info */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-300">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Farmer:</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.farmerName}</span>
+              {/* Modal Body */}
+              <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                {/* 4 Metric Cards */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Fixed Pre-Order Price</span>
+                    <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">₹{detailsModalListing.pricePerKg} / kg</span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">Escrow Guaranteed</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Expected Harvest</span>
+                    <span className="text-base font-semibold text-slate-800 dark:text-slate-200">{detailsModalListing.expectedHarvestDate}</span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">Delivery Ready Date</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Committed by Buyers</span>
+                    <span className="text-base font-bold font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.committedQuantityKg.toLocaleString()} kg</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">
+                      {Math.round((detailsModalListing.committedQuantityKg / detailsModalListing.expectedQuantityKg) * 100)}% Booked
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Remaining Available</span>
+                    <span className="text-base font-bold font-mono text-slate-800 dark:text-slate-200">
+                      {remainingKg.toLocaleString()} kg
+                    </span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">Open to Pre-Commit</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Origin Farm:</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.farmerLocation}, {detailsModalListing.farmerState}</span>
+
+                {/* Logistics Feasibility Corridor */}
+                <div className={`p-4 rounded-xl border text-xs space-y-2 ${
+                  modalLogistics.isFeasible
+                    ? 'bg-emerald-50/70 border-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-800/80 text-emerald-950 dark:text-slate-200'
+                    : 'bg-rose-50 border-rose-300 text-rose-950 dark:bg-rose-950/30 dark:border-rose-800/80 dark:text-rose-200'
+                }`}>
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="flex items-center space-x-1.5">
+                      <Truck className={`w-4 h-4 ${modalLogistics.isFeasible ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`} />
+                      <span>Logistics Corridor: {detailsModalListing.farmerLocation} → {buyerCity} ({modalLogistics.distanceKm} km)</span>
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                      modalLogistics.isFeasible 
+                        ? 'bg-emerald-200 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' 
+                        : 'bg-rose-200 text-rose-900 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-700'
+                    }`}>
+                      {modalLogistics.isFeasible ? 'FEASIBLE ✓' : 'LOGISTICS RISK ⚠️'}
+                    </span>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                    {modalLogistics.reason}
+                  </p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Distribution Hub:</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.darkStoreName}</span>
+
+                {/* Farmer and Hub Info */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Farmer:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.farmerName}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Origin Farm:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.farmerLocation}, {detailsModalListing.farmerState}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Distribution Hub:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.darkStoreName}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Shelf Life & Cold Chain:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.shelfLife}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Shelf Life & Cold Chain:</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{detailsModalListing.shelfLife}</span>
+
+                {/* Description */}
+                {detailsModalListing.description && (
+                  <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <span className="font-semibold text-slate-800 dark:text-slate-200 block mb-1">Crop & Cultivation Notes:</span>
+                    <p>{detailsModalListing.description}</p>
+                  </div>
+                )}
+
+                {/* Escrow Guarantee */}
+                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <span className="flex items-center space-x-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>100% Protected by Smart Contract Bank Escrow</span>
+                  </span>
+                  <span className="font-mono text-slate-400 truncate max-w-[180px]">
+                    {detailsModalListing.contractAddress}
+                  </span>
                 </div>
               </div>
 
-              {/* Description */}
-              {detailsModalListing.description && (
-                <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 block mb-1">Crop & Cultivation Notes:</span>
-                  <p>{detailsModalListing.description}</p>
-                </div>
-              )}
-
-              {/* Escrow Guarantee */}
-              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
-                <span className="flex items-center space-x-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>100% Protected by Smart Contract Bank Escrow</span>
-                </span>
-                <span className="font-mono text-slate-400 truncate max-w-[180px]">
-                  {detailsModalListing.contractAddress}
-                </span>
+              {/* Modal Actions */}
+              <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setDetailsModalListing(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  Close
+                </button>
+                {!modalLogistics.isFeasible ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="px-5 py-2 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800 font-bold text-xs cursor-not-allowed flex items-center space-x-2"
+                    title={modalLogistics.reason}
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                    <span>Logistics Risk (Purchase Blocked)</span>
+                  </button>
+                ) : remainingKg <= 0 ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="px-5 py-2 rounded-xl bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500 font-bold text-xs cursor-not-allowed flex items-center space-x-2"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Sold Out / Pre-Booked</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const toOpen = detailsModalListing;
+                      setDetailsModalListing(null);
+                      setActiveModalListing(toOpen);
+                    }}
+                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm flex items-center space-x-2"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Pre-Order / Buy Now</span>
+                  </button>
+                )}
               </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setDetailsModalListing(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const toOpen = detailsModalListing;
-                  setDetailsModalListing(null);
-                  setActiveModalListing(toOpen);
-                }}
-                disabled={Math.max(0, detailsModalListing.expectedQuantityKg - detailsModalListing.committedQuantityKg) <= 0}
-                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm flex items-center space-x-2"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Pre-Order / Buy Now</span>
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Pre-commitment Checkout Modal */}
       {activeModalListing && (
