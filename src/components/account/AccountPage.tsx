@@ -33,7 +33,7 @@ export const AccountPage: React.FC = () => {
     showToast
   } = useApp();
 
-  const isHindi = lang === 'hi' && activeRole === 'FARMER';
+  const isHindi = lang === 'hi';
 
   // Buyer Form State
   const [buyerData, setBuyerData] = useState<BuyerProfile>({ ...buyerProfile });
@@ -66,7 +66,7 @@ export const AccountPage: React.FC = () => {
     e.preventDefault();
     updateFarmerProfile(farmerData);
     setIsFarmerSaved(true);
-    showToast('किसान प्रोफ़ाइल और बैंक विवरण सफलतापूर्वक सहेजे गए!', 'success');
+    showToast(isHindi ? 'किसान प्रोफ़ाइल और बैंक विवरण सफलतापूर्वक सहेजे गए!' : 'Farmer profile & bank details saved successfully!', 'success');
     setTimeout(() => setIsFarmerSaved(false), 2500);
   };
 
@@ -81,27 +81,45 @@ export const AccountPage: React.FC = () => {
               className="inline-flex items-center space-x-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>{activeRole === 'BUYER' ? 'Back to Marketplace' : 'वापस डैशबोर्ड पर जाएं (Back to Dashboard)'}</span>
+              <span>
+                {activeRole === 'BUYER' 
+                  ? 'Back to Marketplace' 
+                  : isHindi 
+                    ? 'वापस फार्म डैशबोर्ड पर जाएं' 
+                    : 'Back to Farm Dashboard'}
+              </span>
             </button>
             <span className="text-slate-300 dark:text-slate-700">•</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              {activeRole === 'BUYER' ? 'Account & Settings' : 'खाता व सेटिंग्स'}
+              {isHindi ? 'खाता व सेटिंग्स' : 'Account & Settings'}
             </span>
           </div>
 
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center space-x-3">
-            <span>{activeRole === 'BUYER' ? '🏢 Buyer Account & Procurement Profile' : '👨‍🌾 किसान प्रोफ़ाइल एवं खेत विवरण (Farmer Account)'}</span>
+            <span>
+              {activeRole === 'BUYER' 
+                ? '🏢 Buyer Account & Procurement Profile' 
+                : isHindi 
+                  ? '👨‍🌾 किसान प्रोफ़ाइल एवं खेत विवरण' 
+                  : '👨‍🌾 Farmer Profile & Farm Details'}
+            </span>
           </h1>
           <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl">
             {activeRole === 'BUYER'
               ? 'Manage your legal procurement organization, receiving delivery hub warehouse, dispatch contacts, and automated escrow refund credentials.'
-              : 'अपनी पहचान, कृषि रकबा, सिंचाई प्रणाली और प्रत्यक्ष एस्क्रो बैंक खाते का विवरण प्रबंधित करें।'}
+              : isHindi
+                ? 'अपनी पहचान, कृषि रकबा, सिंचाई प्रणाली और प्रत्यक्ष एस्क्रो बैंक खाते का विवरण प्रबंधित करें।'
+                : 'Manage your farming identity, cultivable land area, irrigation infrastructure, and direct escrow bank settlement.'}
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
           <span className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800">
-            {activeRole === 'BUYER' ? 'Authorized Buyer' : 'सत्यापित किसान'}
+            {activeRole === 'BUYER' 
+              ? 'Authorized Buyer' 
+              : isHindi 
+                ? 'सत्यापित किसान' 
+                : 'Verified Farmer'}
           </span>
         </div>
       </div>
@@ -636,15 +654,15 @@ export const AccountPage: React.FC = () => {
 
               <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs">
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-500 dark:text-slate-400">Land Area:</span>
-                  <span className="font-bold text-slate-900 dark:text-white font-mono">{farmerProfile.landSizeAcres} Acres</span>
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'कृषि भूमि:' : 'Land Area:'}</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">{farmerProfile.landSizeAcres} {isHindi ? 'एकड़' : 'Acres'}</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-500 dark:text-slate-400">KCC Number:</span>
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'केसीसी संख्या:' : 'KCC Number:'}</span>
                   <span className="font-mono text-slate-900 dark:text-white text-[11px]">{farmerProfile.kccNumber}</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-500 dark:text-slate-400">Settlement UPI:</span>
+                  <span className="text-slate-500 dark:text-slate-400">{isHindi ? 'निपटान यूपीआई:' : 'Settlement UPI:'}</span>
                   <span className="font-mono text-slate-900 dark:text-white text-[11px]">{farmerProfile.upiId}</span>
                 </div>
               </div>
@@ -656,7 +674,7 @@ export const AccountPage: React.FC = () => {
                   className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
                 >
                   <Sprout className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>View Farm Dashboard</span>
+                  <span>{isHindi ? 'फार्म डैशबोर्ड देखें' : 'View Farm Dashboard'}</span>
                 </button>
               </div>
             </div>
