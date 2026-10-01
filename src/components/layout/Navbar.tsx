@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Sprout, 
   ShoppingBag, 
@@ -12,14 +12,23 @@ import {
   FileCode2,
   Sun,
   Moon,
-  LogOut
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { INDIAN_CITIES } from '../../services/logistics';
 import { AppView, UserRole } from '../../types';
+import { FarmerAccountModal } from '../farmer/FarmerAccountModal';
+import { BuyerAccountModal } from '../buyer/BuyerAccountModal';
 
 export const Navbar: React.FC = () => {
+  const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
+  const [isBuyerModalOpen, setIsBuyerModalOpen] = useState(false);
   const { 
+    lang,
+    setLang,
+    farmerProfile,
+    buyerProfile,
     activeRole, 
     setActiveRole, 
     activeView, 
@@ -60,17 +69,33 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Current Logged In Persona Chip */}
-          <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+          {/* Current Logged In Persona Chip with Quick Profile Edit Access */}
+          <button
+            onClick={() => {
+              if (activeRole === 'FARMER') setIsFarmerModalOpen(true);
+              if (activeRole === 'BUYER') setIsBuyerModalOpen(true);
+            }}
+            className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs transition cursor-pointer group shadow-2xs"
+            title={lang === 'hi' ? 'प्रोफ़ाइल व खाता जानकारी देखने / बदलने हेतु क्लिक करें' : 'Click to view & edit profile / account data'}
+          >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-500 dark:text-slate-400 font-medium">Active Session:</span>
-            <span className="text-slate-800 dark:text-slate-200 font-semibold font-mono">
-              {activeRole === 'FARMER' ? 'Ravi Singh (Farmer)' : activeRole === 'BUYER' ? `Buyer (${buyerCity})` : 'Protocol Admin'}
+            <span className="text-slate-500 dark:text-slate-400 font-medium">
+              {lang === 'hi' ? 'सक्रिय सत्र:' : 'Active Session:'}
             </span>
-          </div>
+            <span className="text-slate-800 dark:text-slate-200 font-semibold font-mono group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              {activeRole === 'FARMER' 
+                ? `${farmerProfile.name} (${lang === 'hi' ? 'किसान' : 'Farmer'})` 
+                : activeRole === 'BUYER' 
+                  ? `${buyerProfile.name} (${buyerCity})` 
+                  : 'Protocol Admin'}
+            </span>
+            <span className="text-[10px] text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              ✏️
+            </span>
+          </button>
 
           {/* Right Navigation & Tools */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-2.5">
             {/* Buyer City Selector (Shown only for Buyer role) */}
             {activeRole === 'BUYER' && (
               <div className="hidden md:flex items-center space-x-1.5 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
@@ -90,10 +115,38 @@ export const Navbar: React.FC = () => {
               </div>
             )}
 
+            {/* Language Switcher (Moved to top beside Dark Mode) */}
+            <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-0.5 rounded-xl border border-slate-300 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setLang('en')}
+                className={`px-2 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 ${
+                  lang === 'en'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Switch interface to English"
+              >
+                <span>🇬🇧 EN</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('hi')}
+                className={`px-2 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 ${
+                  lang === 'hi'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="सरल हिन्दी में बदलें"
+              >
+                <span>🇮🇳 हिन्दी</span>
+              </button>
+            </div>
+
             {/* Dark Mode Toggle Button */}
             <button
               onClick={toggleDarkMode}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs transition"
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs transition"
               title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDarkMode ? (
@@ -134,11 +187,11 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-center space-x-1 sm:space-x-3 border-t border-slate-200 dark:border-slate-800/80 py-2 overflow-x-auto text-xs scrollbar-none">
           {activeRole === 'FARMER' && (
             <>
-              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label="My Farm Dashboard" />
-              <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label="Buyer Demand" />
-              <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label="Crop Agreement" />
-              <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label="Storage Godowns" />
-              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label="Payment & Bank Records" />
+              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'मेरा फार्म डैशबोर्ड' : 'My Farm Dashboard'} />
+              <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'खरीदार मांग' : 'Buyer Demand'} />
+              <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'फसल समझौता' : 'Crop Agreement'} />
+              <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'गोदाम और साइलो' : 'Storage Godowns'} />
+              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'भुगतान व बैंक रिकॉर्ड' : 'Payment & Bank Records'} />
             </>
           )}
 
@@ -163,6 +216,16 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Account Profile Modals triggered from Top Bar */}
+      <FarmerAccountModal
+        isOpen={isFarmerModalOpen}
+        onClose={() => setIsFarmerModalOpen(false)}
+      />
+      <BuyerAccountModal
+        isOpen={isBuyerModalOpen}
+        onClose={() => setIsBuyerModalOpen(false)}
+      />
     </header>
   );
 };

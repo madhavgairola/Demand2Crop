@@ -26,18 +26,88 @@ import {
   generateTxHash, 
   generateContractId 
 } from '../services/blockchain';
+import { FarmerLang } from '../components/farmer/farmerTranslations';
 
 interface ToastState {
   message: string;
   type: 'success' | 'info' | 'warning' | 'error';
 }
 
+export interface FarmerProfile {
+  name: string;
+  phone: string;
+  village: string;
+  district: string;
+  state: string;
+  landSizeAcres: number;
+  soilType: string;
+  irrigationMethod: string;
+  kccNumber: string;
+  bankAccount: string;
+  ifscCode: string;
+  upiId: string;
+}
+
+export interface BuyerProfile {
+  name: string;
+  companyName: string;
+  phone: string;
+  email: string;
+  city: string;
+  state: string;
+  deliveryAddress: string;
+  businessType: string;
+  gstin: string;
+  bankAccount: string;
+}
+
+export const DEFAULT_FARMER_PROFILE: FarmerProfile = {
+  name: 'Ravi Singh',
+  phone: '+91 98765 43210',
+  village: 'Sahnewal Khurd',
+  district: 'Ludhiana',
+  state: 'Punjab',
+  landSizeAcres: 12,
+  soilType: 'Alluvial Fertile Loam (pH 7.2)',
+  irrigationMethod: 'Canal + Solar Micro-Drip',
+  kccNumber: 'KCC-PB-489201',
+  bankAccount: 'State Bank of India (SBI) •••• 4892',
+  ifscCode: 'SBIN0001234',
+  upiId: 'ravi.singh@oksbi'
+};
+
+export const DEFAULT_BUYER_PROFILE: BuyerProfile = {
+  name: 'Priya Sharma',
+  companyName: 'FreshRoot Agro Procurements Ltd',
+  phone: '+91 98100 12345',
+  email: 'priya.sharma@freshroot.in',
+  city: 'Delhi',
+  state: 'Delhi NCR',
+  deliveryAddress: 'Warehouse 4B, Okhla Industrial Area Phase-III, New Delhi',
+  businessType: 'Retail Supermarket & Food Processing',
+  gstin: '07AAAAA0000A1Z5',
+  bankAccount: 'HDFC Bank •••• 8821'
+};
+
 const STORAGE_KEY_LISTINGS = 'demand2crop_listings_v3';
 const STORAGE_KEY_ORDERS = 'demand2crop_orders_v3';
 const STORAGE_KEY_TXS = 'demand2crop_txs_v3';
 const STORAGE_KEY_BLOCKS = 'demand2crop_blocks_v3';
+const STORAGE_KEY_LANG = 'demand2crop_lang_v2';
+const STORAGE_KEY_FARMER_PROFILE = 'demand2crop_farmer_profile_v2';
+const STORAGE_KEY_BUYER_PROFILE = 'demand2crop_buyer_profile_v2';
 
 interface AppContextType {
+  // Language (English / Hindi)
+  lang: FarmerLang;
+  setLang: (lang: FarmerLang) => void;
+
+  // Account / Profiles
+  farmerProfile: FarmerProfile;
+  updateFarmerProfile: (profile: Partial<FarmerProfile>) => void;
+  buyerProfile: BuyerProfile;
+  updateBuyerProfile: (profile: Partial<BuyerProfile>) => void;
+
   // Navigation & Role
   activeRole: UserRole;
   setActiveRole: (role: UserRole) => void;
@@ -199,10 +269,87 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           if (Array.isArray(parsed)) setOrders(parsed);
         } catch {}
       }
+      if (e.key === STORAGE_KEY_LANG && e.newValue) {
+        if (e.newValue === 'en' || e.newValue === 'hi') setLangState(e.newValue as FarmerLang);
+      }
+      if (e.key === STORAGE_KEY_FARMER_PROFILE && e.newValue) {
+        try {
+          setFarmerProfile(JSON.parse(e.newValue));
+        } catch {}
+      }
+      if (e.key === STORAGE_KEY_BUYER_PROFILE && e.newValue) {
+        try {
+          setBuyerProfile(JSON.parse(e.newValue));
+        } catch {}
+      }
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  // Language state (English / Hindi)
+  const [lang, setLangState] = useState<FarmerLang>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_LANG);
+      if (saved === 'en' || saved === 'hi') return saved as FarmerLang;
+    } catch {}
+    return 'en';
+  });
+
+  const setLang = (newLang: FarmerLang) => {
+    setLangState(newLang);
+    try {
+      localStorage.setItem(STORAGE_KEY_LANG, newLang);
+    } catch {}
+  };
+
+  // Farmer & Buyer Profiles
+  const [farmerProfile, setFarmerProfile] = useState<FarmerProfile>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_FARMER_PROFILE);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEFAULT_FARMER_PROFILE;
+  });
+
+  const updateFarmerProfile = (data: Partial<FarmerProfile>) => {
+    setFarmerProfile((prev) => {
+      const updated = { ...prev, ...data };
+      try {
+        localStorage.setItem(STORAGE_KEY_FARMER_PROFILE, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    showToast(
+      lang === 'hi' ? 'किसान खाता व खेत विवरण सफलतापूर्वक सहेजा गया!' : 'Farmer account & farm info updated successfully!',
+      'success'
+    );
+  };
+
+  const [buyerProfile, setBuyerProfile] = useState<BuyerProfile>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_BUYER_PROFILE);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEFAULT_BUYER_PROFILE;
+  });
+
+  const updateBuyerProfile = (data: Partial<BuyerProfile>) => {
+    setBuyerProfile((prev) => {
+      const updated = { ...prev, ...data };
+      try {
+        localStorage.setItem(STORAGE_KEY_BUYER_PROFILE, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    if (data.city) {
+      setBuyerCity(data.city);
+    }
+    showToast(
+      lang === 'hi' ? 'खरीदार प्रोफ़ाइल व डिलीवरी विवरण सहेजा गया!' : 'Buyer account & delivery profile updated successfully!',
+      'success'
+    );
+  };
 
   // Guided demo tour
   const [demoStep, setDemoStep] = useState<number>(1);
@@ -265,9 +412,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       contractId,
       contractAddress,
       farmerId: 'farmer-ravi-singh',
-      farmerName: 'Ravi Singh',
-      farmerLocation: locationInput,
-      farmerState: derivedState,
+      farmerName: farmerProfile.name,
+      farmerLocation: locationInput || farmerProfile.district || 'Ludhiana',
+      farmerState: derivedState || farmerProfile.state || 'Punjab',
       coordinates: derivedCoords,
       crop: (data.crop as CropType) || 'Wheat',
       variety: data.variety || 'Certified Variety',
@@ -778,6 +925,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       localStorage.removeItem(STORAGE_KEY_ORDERS);
       localStorage.removeItem(STORAGE_KEY_TXS);
       localStorage.removeItem(STORAGE_KEY_BLOCKS);
+      localStorage.removeItem(STORAGE_KEY_FARMER_PROFILE);
+      localStorage.removeItem(STORAGE_KEY_BUYER_PROFILE);
     } catch {}
     setListings(INITIAL_LISTINGS);
     setOrders(INITIAL_ORDERS);
@@ -785,6 +934,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setDarkStores(DARK_STORE_HUBS);
     setTransactions(INITIAL_TRANSACTIONS);
     setBlocks(INITIAL_BLOCKS);
+    setFarmerProfile(DEFAULT_FARMER_PROFILE);
+    setBuyerProfile(DEFAULT_BUYER_PROFILE);
     setDemoStep(1);
     showToast('Platform data reset to benchmark initial state!', 'info');
   };
@@ -796,6 +947,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        lang,
+        setLang,
+        farmerProfile,
+        updateFarmerProfile,
+        buyerProfile,
+        updateBuyerProfile,
         activeRole,
         setActiveRole,
         activeView,

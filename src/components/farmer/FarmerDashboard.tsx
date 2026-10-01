@@ -21,12 +21,14 @@ import {
   TrendingUp, 
   Info,
   Scale,
-  Warehouse
+  Warehouse,
+  User
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CreateHarvestModal } from './CreateHarvestModal';
 import { PartialFulfillmentModal } from './PartialFulfillmentModal';
 import { FarmerReputationModal } from './FarmerReputationModal';
+import { FarmerAccountModal } from './FarmerAccountModal';
 import { LifecycleStage } from '../../types';
 import { FarmerLang, farmerTranslations, stageTranslations } from './farmerTranslations';
 
@@ -105,10 +107,13 @@ export const FarmerDashboard: React.FC = () => {
     listings, 
     advanceListingStage, 
     setSelectedListing, 
-    setActiveView 
+    setActiveView,
+    lang,
+    setLang,
+    farmerProfile
   } = useApp();
 
-  const [lang, setLang] = useState<FarmerLang>('en');
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPartialOpen, setIsPartialOpen] = useState(false);
   const [isReputationOpen, setIsReputationOpen] = useState(false);
@@ -144,7 +149,7 @@ export const FarmerDashboard: React.FC = () => {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {lang === 'hi' ? 'रवि सिंह (Ravi Singh)' : 'Ravi Singh'}
+                  {farmerProfile.name} {lang === 'hi' ? '(किसान)' : ''}
                 </h2>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-700/50 flex items-center space-x-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -157,7 +162,9 @@ export const FarmerDashboard: React.FC = () => {
 
               <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center space-x-1.5 mt-1">
                 <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>{t.location}</span>
+                <span>{farmerProfile.village}, {farmerProfile.district}, {farmerProfile.state}</span>
+                <span className="text-slate-300 dark:text-slate-700">|</span>
+                <span className="text-slate-500 dark:text-slate-400 font-mono">{farmerProfile.phone}</span>
               </p>
 
               {/* Stat Chips */}
@@ -183,35 +190,17 @@ export const FarmerDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Toolbar & Language Switcher */}
+          {/* Action Toolbar */}
           <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            {/* Language Switcher Pill */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-              <button
-                type="button"
-                onClick={() => setLang('en')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
-                  lang === 'en'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Switch interface to English"
-              >
-                <span>🇬🇧 English</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang('hi')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
-                  lang === 'hi'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="सरल हिन्दी में बदलें"
-              >
-                <span>🇮🇳 हिन्दी</span>
-              </button>
-            </div>
+            {/* Account & Farm Details Modal Trigger */}
+            <button
+              onClick={() => setIsAccountOpen(true)}
+              className="flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-300 dark:border-slate-700 transition"
+              title={lang === 'hi' ? 'किसान व खेत की जानकारी जोड़ें या बदलें' : 'Add or edit farmer and farm details'}
+            >
+              <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>{lang === 'hi' ? '👤 खाता व खेत जानकारी' : '👤 Account & Farm Info'}</span>
+            </button>
 
             {/* Scorecard Button */}
             <button
@@ -230,6 +219,69 @@ export const FarmerDashboard: React.FC = () => {
               <Plus className="w-4 h-4" />
               <span>{t.createListing}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Farm & Operational Infrastructure Details (Making the card longer length wise) */}
+        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
+              <span className="text-base">🚜</span>
+              <span>{lang === 'hi' ? 'कुल कृषि भूमि' : 'Cultivable Land'}</span>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
+                {farmerProfile.landSizeAcres} {lang === 'hi' ? 'एकड़' : 'Acres'}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={farmerProfile.soilType}>
+                {farmerProfile.soilType}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
+              <span className="text-base">💧</span>
+              <span>{lang === 'hi' ? 'सिंचाई व्यवस्था' : 'Irrigation System'}</span>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white truncate" title={farmerProfile.irrigationMethod}>
+                {farmerProfile.irrigationMethod}
+              </div>
+              <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                {lang === 'hi' ? 'सदाबहार सुनिश्चित आपूर्ति' : 'Assured Year-Round'}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
+              <span className="text-base">📜</span>
+              <span>{lang === 'hi' ? 'केसीसी कार्ड' : 'KCC Credential'}</span>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
+                {farmerProfile.kccNumber}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                {lang === 'hi' ? 'सरकारी बायोमेट्रिक सत्यापित' : 'Govt Biometric Verified'}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+            <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-[11px] font-medium mb-1">
+              <span className="text-base">🏦</span>
+              <span>{lang === 'hi' ? 'सीधा भुगतान बैंक' : 'Settlement Bank'}</span>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white truncate" title={farmerProfile.bankAccount}>
+                {farmerProfile.bankAccount}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                {farmerProfile.upiId}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -602,6 +654,10 @@ export const FarmerDashboard: React.FC = () => {
       </div>
 
       {/* 9. Interactive Modals (passing lang for full Hindi & English experience) */}
+      <FarmerAccountModal 
+        isOpen={isAccountOpen} 
+        onClose={() => setIsAccountOpen(false)} 
+      />
       <CreateHarvestModal 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
