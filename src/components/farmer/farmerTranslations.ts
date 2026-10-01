@@ -86,7 +86,15 @@ export const farmerTranslations = {
     locationLabel: 'Farm Location / District',
     descriptionLabel: 'Farming Practice & Soil Notes',
     estRevenueLabel: 'Total Expected Income',
-    upfrontCapitalLabel: '30% Advance for Seeds/Fertilizer',
+    upfrontCapitalLabel: 'Upfront Advance for Seeds & Growing',
+    advancePctLabel: 'Upfront Capital for Growing (% of Pre-Commitment)',
+    advancePctHelper: 'Percentage of pre-order funds released upfront upon sowing for seeds, fertilizer & preparation',
+    viewDetailsTab: 'Hover or click for full crop details',
+    viewDetailsBtn: 'View Details',
+    hideDetailsBtn: 'Close',
+    contractRefLabel: 'Contract ID',
+    escrowProtectedLabel: '100% Bank Escrow Protected',
+    selectToManage: 'Manage on Dashboard',
     createSubmitBtn: 'Publish Crop & Get Buyers',
 
     // Yield Simulator Modal
@@ -198,7 +206,15 @@ export const farmerTranslations = {
     locationLabel: 'खेत का स्थान / जिला',
     descriptionLabel: 'खेती का तरीका व मिट्टी विवरण',
     estRevenueLabel: 'कुल संभावित कमाई',
-    upfrontCapitalLabel: 'बुवाई पर 30% अग्रिम सहायता',
+    upfrontCapitalLabel: 'बुवाई व खाद-बीज हेतु अग्रिम राशि',
+    advancePctLabel: 'बुवाई व खाद-बीज हेतु अग्रिम पूंजी (% अनुपात)',
+    advancePctHelper: 'बुवाई के समय खाद, बीज और खेत तैयारी के लिए सीधे मिलने वाली अग्रिम राशि का प्रतिशत',
+    viewDetailsTab: 'पूरा विवरण देखने के लिए होवर या क्लिक करें',
+    viewDetailsBtn: 'विवरण देखें',
+    hideDetailsBtn: 'बंद करें',
+    contractRefLabel: 'अनुबंध आईडी',
+    escrowProtectedLabel: '100% बैंक एस्क्रो द्वारा सुरक्षित',
+    selectToManage: 'डैशबोर्ड पर सक्रिय करें',
     createSubmitBtn: 'फसल दर्ज करें व खरीदार पाएं',
 
     // Yield Simulator Modal

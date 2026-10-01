@@ -530,6 +530,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       expectedQuantityKg: data.expectedQuantityKg || 1000,
       committedQuantityKg: 0,
       pricePerKg: data.pricePerKg || 10,
+      advancePayoutPct: data.advancePayoutPct !== undefined ? data.advancePayoutPct : 30,
       sowingDate: data.sowingDate || new Date().toISOString().split('T')[0],
       expectedHarvestDate: data.expectedHarvestDate || '2026-12-15',
       shelfLife: data.shelfLife || 'Long shelf life (365 days)',

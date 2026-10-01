@@ -24,13 +24,14 @@ import {
   Warehouse,
   User,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { CreateHarvestModal } from './CreateHarvestModal';
 import { PartialFulfillmentModal } from './PartialFulfillmentModal';
 import { FarmerReputationModal } from './FarmerReputationModal';
-import { LifecycleStage } from '../../types';
+import { LifecycleStage, HarvestListing } from '../../types';
 import { FarmerLang, farmerTranslations, stageTranslations } from './farmerTranslations';
 
 const STAGE_ORDER: LifecycleStage[] = [
@@ -121,6 +122,8 @@ export const FarmerDashboard: React.FC = () => {
   const t = farmerTranslations[lang];
 
   const [selectedListingId, setSelectedListingId] = useState<string>('');
+  const [hoveredListingId, setHoveredListingId] = useState<string | null>(null);
+  const [detailsModalListing, setDetailsModalListing] = useState<HarvestListing | null>(null);
 
   // Farmer's listings
   const raviListings = listings.filter((l) => l.farmerId === 'farmer-ravi-singh');
@@ -129,10 +132,11 @@ export const FarmerDashboard: React.FC = () => {
     raviListings[0] || 
     listings[0];
 
+  const advancePct = primaryListing.advancePayoutPct ?? 30;
   const committedPct = Math.round((primaryListing.committedQuantityKg / primaryListing.expectedQuantityKg) * 100);
   const remainingKg = Math.max(0, primaryListing.expectedQuantityKg - primaryListing.committedQuantityKg);
   const totalRevenue = primaryListing.expectedQuantityKg * primaryListing.pricePerKg;
-  const initialWorkingCapital = Math.round((primaryListing.committedQuantityKg * primaryListing.pricePerKg) * 0.3);
+  const initialWorkingCapital = Math.round((primaryListing.committedQuantityKg * primaryListing.pricePerKg) * (advancePct / 100));
 
   const currentStageIndex = STAGE_ORDER.indexOf(primaryListing.stage);
 
@@ -398,12 +402,20 @@ export const FarmerDashboard: React.FC = () => {
             </div>
             <div className="space-y-1">
               <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-sm flex items-center space-x-2">
-                <span>{committedPct >= 65 ? t.advanceCapitalNotice : t.awaitingCommitments}</span>
+                <span>
+                  {committedPct >= 65
+                    ? (lang === 'hi' 
+                        ? `🎉 शुभ समाचार: बीज व खाद के लिए ₹${initialWorkingCapital.toLocaleString()} (${advancePct}% अग्रिम राशि) स्वीकृत! (कुल ₹${primaryListing.escrowTotalLocked.toLocaleString()} बैंक में सुरक्षित)`
+                        : `🎉 Good News: ₹${initialWorkingCapital.toLocaleString()} (${advancePct}% Advance Capital) ready for seeds & fertilizer! (₹${primaryListing.escrowTotalLocked.toLocaleString()} safely in escrow)`)
+                    : (lang === 'hi'
+                        ? `अग्रिम राशि (${advancePct}%) प्राप्त करने के लिए खरीदारों की बुकिंग की प्रतीक्षा है।`
+                        : `Awaiting buyer bookings to unlock ${advancePct}% upfront growing capital.`)}
+                </span>
               </h4>
               <p className="text-emerald-800/80 dark:text-emerald-400/90 text-xs">
                 {lang === 'hi' 
-                  ? `बीज, खाद, और डीजल की लागत के लिए ₹${initialWorkingCapital.toLocaleString()} सीधे आपके खाते में जारी। शेष राशि डिलीवरी पर तुरंत मिलेगी।`
-                  : `Working capital of ₹${initialWorkingCapital.toLocaleString()} is released upon sowing. The remaining funds are disbursed seamlessly upon hub delivery.`}
+                  ? `बीज, खाद, और खेत की तैयारी के लिए ₹${initialWorkingCapital.toLocaleString()} (${advancePct}%) बुवाई होते ही सीधे आपके खाते में जारी। शेष राशि डिलीवरी पर तुरंत मिलेगी।`
+                  : `Working capital of ₹${initialWorkingCapital.toLocaleString()} (${advancePct}%) is unlocked upon sowing for certified seeds & fertilizer. Balance is paid upon delivery.`}
               </p>
             </div>
           </div>
@@ -566,8 +578,8 @@ export const FarmerDashboard: React.FC = () => {
             <span>🌾</span>
             <span>{t.allListingsTitle} ({listings.length})</span>
           </h3>
-          <span className="text-xs text-slate-500">
-            {lang === 'hi' ? 'सभी सौदे सुरक्षित बैंक एस्क्रो में हैं' : 'All contracts secured by smart contract escrow'}
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {lang === 'hi' ? 'विवरण देखने के लिए किसी भी फसल पर होवर या क्लिक करें' : 'Hover or click any card for details'}
           </span>
         </div>
 
@@ -577,39 +589,39 @@ export const FarmerDashboard: React.FC = () => {
             const cropHindi = CROP_HINDI_NAMES[listing.crop] || listing.crop;
             const itemCommittedPct = Math.min(100, Math.round((listing.committedQuantityKg / listing.expectedQuantityKg) * 100));
             const isSelected = listing.id === primaryListing.id;
+            const isHovered = hoveredListingId === listing.id;
 
             return (
               <div
                 key={listing.id}
+                onMouseEnter={() => setHoveredListingId(listing.id)}
+                onMouseLeave={() => setHoveredListingId(null)}
                 onClick={() => {
                   setSelectedListingId(listing.id);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`bg-white dark:bg-slate-900 border rounded-xl p-4 space-y-3 cursor-pointer transition shadow-xs ${
+                className={`relative bg-white dark:bg-slate-900 border rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-xs ${
                   isSelected 
                     ? 'border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-50/20 dark:bg-emerald-950/20' 
-                    : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-slate-700'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600/50 hover:shadow-md'
                 }`}
-                title={lang === 'hi' ? 'इस फसल का विवरण व प्रबंधन देखने के लिए क्लिक करें' : 'Click to select and manage this harvest'}
+                title={lang === 'hi' ? 'विवरण देखने व प्रबंधन करने के लिए क्लिक करें' : 'Click to select and manage this harvest'}
               >
-                <div className="flex items-start justify-between">
+                {/* 1. Crop Name & Cost (Clean minimalist face) */}
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2.5">
-                    <span className="text-2xl">{cropIcon}</span>
+                    <span className="text-2xl shrink-0">{cropIcon}</span>
                     <div>
                       <div className="flex items-center space-x-1.5">
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                           {lang === 'hi' ? cropHindi : listing.crop}
                         </h4>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-normal">({listing.variety})</span>
                         {isSelected && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
                             {lang === 'hi' ? 'सक्रिय' : 'Active'}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {lang === 'hi' && listing.farmerName === 'Ravi Singh' ? 'रवि सिंह' : listing.farmerName} • {listing.farmerLocation}
-                      </p>
                     </div>
                   </div>
                   <span className="font-mono text-xs px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 dark:bg-slate-800 dark:text-emerald-400 font-bold border border-emerald-200 dark:border-transparent">
@@ -617,31 +629,168 @@ export const FarmerDashboard: React.FC = () => {
                   </span>
                 </div>
 
+                {/* 2. Pre-book Progress Bar */}
                 <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-                    <span>{t.committedLabel}: <strong className="text-emerald-700 dark:text-emerald-400 font-mono">{listing.committedQuantityKg.toLocaleString()} kg</strong> ({itemCommittedPct}%)</span>
-                    <span>{t.targetLabel}: <strong className="text-slate-700 dark:text-slate-300 font-mono">{listing.expectedQuantityKg.toLocaleString()} kg</strong></span>
+                  <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+                    <span>
+                      {t.committedLabel}: <strong className="text-emerald-700 dark:text-emerald-400 font-mono">{itemCommittedPct}%</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailsModalListing(listing);
+                      }}
+                      className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center space-x-1"
+                      title={lang === 'hi' ? 'पूरा विवरण देखें' : 'View full details'}
+                    >
+                      <span>{t.viewDetailsBtn}</span>
+                      <Info className="w-3 h-3" />
+                    </button>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
                     <div
-                      className="h-full bg-emerald-600 dark:bg-emerald-500 rounded-full"
+                      className="h-full bg-emerald-600 dark:bg-emerald-500 rounded-full transition-all duration-500"
                       style={{ width: `${itemCommittedPct}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <span className="flex items-center space-x-1">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{t.harvestLabel}: {listing.expectedHarvestDate}</span>
-                  </span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-mono text-[11px] font-semibold">{listing.contractId}</span>
-                </div>
+                {/* Hover Tab Popover (Opens cleanly on Hover) */}
+                {isHovered && (
+                  <div className="absolute left-0 right-0 top-full mt-1.5 z-40 p-4 bg-white dark:bg-slate-900 border border-emerald-400 dark:border-emerald-600/50 rounded-xl shadow-xl space-y-2.5 text-xs animate-fade-in pointer-events-auto">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                      <div>
+                        <span className="font-bold text-slate-900 dark:text-white">
+                          {lang === 'hi' ? cropHindi : listing.crop}
+                        </span>
+                        <span className="text-slate-500 dark:text-slate-400 ml-1.5 font-mono text-[11px]">
+                          ({listing.variety})
+                        </span>
+                      </div>
+                      <span className="font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                        {listing.contractId}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-300">
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.locationLabel}</span>
+                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate block">
+                          {listing.farmerLocation}, {listing.farmerState}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.harvestLabel}</span>
+                        <span className="font-medium text-slate-800 dark:text-slate-200">{listing.expectedHarvestDate}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.targetLabel}</span>
+                        <span className="font-medium text-slate-800 dark:text-slate-200 font-mono">{listing.expectedQuantityKg.toLocaleString()} kg</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.committedLabel}</span>
+                        <span className="font-medium text-emerald-700 dark:text-emerald-400 font-mono">{listing.committedQuantityKg.toLocaleString()} kg</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                        {listing.advancePayoutPct || 30}% {lang === 'hi' ? 'अग्रिम पूंजी' : 'seed advance'}
+                      </span>
+                      <span className="text-[11px] text-slate-400 flex items-center space-x-1">
+                        <span>{t.selectToManage}</span>
+                        <ArrowRight className="w-3 h-3 text-emerald-600" />
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Click Details Modal for Farmer Dashboard Listings */}
+      {detailsModalListing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+              <div className="flex items-center space-x-2.5">
+                <span className="text-2xl">{CROP_ICONS[detailsModalListing.crop] || '🌱'}</span>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    {lang === 'hi' ? CROP_HINDI_NAMES[detailsModalListing.crop] || detailsModalListing.crop : detailsModalListing.crop}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-mono">{detailsModalListing.variety}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setDetailsModalListing(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.guaranteedPrice}</span>
+                  <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">₹{detailsModalListing.pricePerKg} / kg</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.harvestLabel}</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{detailsModalListing.expectedHarvestDate}</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.committedDemand}</span>
+                  <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.committedQuantityKg} kg</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{t.totalQuantity}</span>
+                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-slate-200">{detailsModalListing.expectedQuantityKg} kg</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
+                <span className="font-semibold text-emerald-900 dark:text-emerald-300">
+                  {lang === 'hi' ? 'अग्रिम पूंजी सहायता:' : 'Growing Advance Rate:'} {detailsModalListing.advancePayoutPct || 30}%
+                </span>
+                <p className="text-emerald-800/80 dark:text-emerald-400 text-[11px]">
+                  {lang === 'hi' 
+                    ? `बुवाई होते ही ₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30)/100)).toLocaleString()} की पूंजी सीधे खाते में जारी होगी।`
+                    : `₹${Math.round(detailsModalListing.committedQuantityKg * detailsModalListing.pricePerKg * ((detailsModalListing.advancePayoutPct || 30)/100)).toLocaleString()} eligible for seed & fertilizer release upon sowing.`}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between text-slate-500 pt-1">
+                <span>{detailsModalListing.farmerLocation}, {detailsModalListing.farmerState}</span>
+                <span className="font-mono text-emerald-700 dark:text-emerald-400">{detailsModalListing.contractId}</span>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex justify-end space-x-2">
+              <button
+                onClick={() => setDetailsModalListing(null)}
+                className="px-3.5 py-1.5 rounded-lg text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                {t.hideDetailsBtn}
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedListingId(detailsModalListing.id);
+                  setDetailsModalListing(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
+              >
+                {t.selectToManage}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 9. Interactive Modals (passing lang for full Hindi & English experience) */}
       <CreateHarvestModal 

@@ -77,6 +77,7 @@ export interface HarvestListing {
   expectedQuantityKg: number;
   committedQuantityKg: number;
   pricePerKg: number;
+  advancePayoutPct?: number; // Upfront percentage for growing/sowing (e.g. 10 to 50, default 30)
   sowingDate: string;
   expectedHarvestDate: string;
   actualHarvestDate?: string;

@@ -21,6 +21,7 @@ export const INITIAL_LISTINGS: HarvestListing[] = [
     expectedQuantityKg: 1000,
     committedQuantityKg: 650, // Initially 650 kg committed by 3 buyers!
     pricePerKg: 10,
+    advancePayoutPct: 30,
     sowingDate: '2026-10-15',
     expectedHarvestDate: '2026-12-15',
     shelfLife: 'Long shelf life (365 days)',

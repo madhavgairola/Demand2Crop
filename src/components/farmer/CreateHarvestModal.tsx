@@ -37,6 +37,7 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
   const [pricePerKg, setPricePerKg] = useState<number>(10);
   const [expectedHarvestDate, setExpectedHarvestDate] = useState<string>('2026-12-15');
   const [farmerLocation, setFarmerLocation] = useState<string>('Ludhiana');
+  const [advancePayoutPct, setAdvancePayoutPct] = useState<number>(30);
   const [description, setDescription] = useState<string>(
     'Certified non-GMO golden wheat grown with organic compost and solar-powered micro-irrigation.'
   );
@@ -45,7 +46,7 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
 
   const cropMeta = CROP_METADATA_REGISTRY[crop];
   const totalExpectedRevenue = expectedQuantityKg * pricePerKg;
-  const initialWorkingCapital = Math.round(totalExpectedRevenue * 0.3);
+  const initialWorkingCapital = Math.round(totalExpectedRevenue * (advancePayoutPct / 100));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +55,7 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
       variety,
       expectedQuantityKg,
       pricePerKg,
+      advancePayoutPct,
       expectedHarvestDate,
       farmerLocation,
       shelfLife: `${cropMeta.shelfLifeDays} days (${cropMeta.perishability})`,
@@ -221,6 +223,54 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
             />
           </div>
 
+          {/* Upfront Growing Capital Percentage Selector */}
+          <div className="bg-slate-50 dark:bg-slate-950/70 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                  {t.advancePctLabel}
+                </label>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {t.advancePctHelper}
+                </p>
+              </div>
+              <span className="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700">
+                {advancePayoutPct}%
+              </span>
+            </div>
+
+            {/* Quick Preset Buttons & Slider */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              {[15, 20, 25, 30, 35, 40, 50].map((pct) => (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => setAdvancePayoutPct(pct)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    advancePayoutPct === pct
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-400'
+                  }`}
+                >
+                  {pct}%
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center space-x-3 pt-1">
+              <input
+                type="range"
+                min={10}
+                max={50}
+                step={5}
+                value={advancePayoutPct}
+                onChange={(e) => setAdvancePayoutPct(Number(e.target.value))}
+                className="flex-1 accent-emerald-600 cursor-pointer"
+              />
+              <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">10% - 50%</span>
+            </div>
+          </div>
+
           {/* Contract Financial Projection Box */}
           <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-600/30 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div>
@@ -232,8 +282,8 @@ export const CreateHarvestModal: React.FC<CreateHarvestModalProps> = ({ isOpen, 
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400">
                 {lang === 'hi' 
-                  ? `बीज-खाद के लिए ₹${initialWorkingCapital.toLocaleString()} (30% अग्रिम राशि) बुवाई होते ही जारी होगी`
-                  : `Up to ₹${initialWorkingCapital.toLocaleString()} (30%) eligible for upfront sowing working capital release`}
+                  ? `बीज-खाद के लिए ₹${initialWorkingCapital.toLocaleString()} (${advancePayoutPct}% अग्रिम राशि) बुवाई होते ही जारी होगी`
+                  : `Up to ₹${initialWorkingCapital.toLocaleString()} (${advancePayoutPct}%) eligible for upfront sowing working capital release`}
               </p>
             </div>
 
