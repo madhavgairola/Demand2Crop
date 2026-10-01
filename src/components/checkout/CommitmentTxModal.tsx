@@ -286,7 +286,7 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
               </div>
               <h4 className="text-xl font-bold text-slate-900 dark:text-white">Transaction Confirmed ✓</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Harvest pre-commitment locked into escrow. Farmer dashboard updated immediately.
+                Harvest pre-commitment locked into cryptographic escrow. Forward contract registered on distributed ledger.
               </p>
             </div>
 
@@ -330,18 +330,13 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
               </div>
             </div>
 
-            {/* Actions: View in Farmer Dashboard or View Orders */}
+            {/* Actions: Continue Shopping or Track Order */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
-                onClick={() => {
-                  handleResetAndClose();
-                  setActiveRole('FARMER');
-                  setActiveView('farmer');
-                }}
+                onClick={handleResetAndClose}
                 className="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 transition"
               >
-                <span>Check Farmer Dashboard (+{validatedQty} kg)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Explore More Harvests</span>
               </button>
 
               <button
@@ -351,7 +346,7 @@ export const CommitmentTxModal: React.FC<CommitmentTxModalProps> = ({
                 }}
                 className="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
               >
-                <span>Track Order Lifecycle</span>
+                <span>Track Order & Provenance</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

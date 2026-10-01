@@ -47,10 +47,10 @@ export const FarmerAccountModal: React.FC<FarmerAccountModalProps> = ({ isOpen, 
   const isHindi = lang === 'hi';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+    <div className="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-4 md:p-6 bg-slate-950/70 dark:bg-slate-950/85 backdrop-blur-sm animate-fade-in flex items-center justify-center">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[88vh] my-auto">
+        {/* Header - shrink-0 to prevent compression */}
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-600/20 dark:text-emerald-400 flex items-center justify-center border border-emerald-300 dark:border-emerald-500/30 text-xl shadow-xs">
               👨‍🌾
@@ -75,14 +75,16 @@ export const FarmerAccountModal: React.FC<FarmerAccountModalProps> = ({ isOpen, 
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
-          {/* Section 1: Personal & Contact */}
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 border-b border-slate-200 dark:border-slate-800 pb-1">
-              <User className="w-3.5 h-3.5" />
-              <span>{isHindi ? '१. व्यक्तिगत एवं संपर्क जानकारी' : '1. Personal & Contact Information'}</span>
-            </div>
+        {/* Form Body - flex flex-col flex-1 min-h-0 */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          {/* Scrollable Form Content */}
+          <div className="p-6 space-y-6 overflow-y-auto flex-1 min-h-0">
+            {/* Section 1: Personal & Contact */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 border-b border-slate-200 dark:border-slate-800 pb-1">
+                <User className="w-3.5 h-3.5" />
+                <span>{isHindi ? '१. व्यक्तिगत एवं संपर्क जानकारी' : '1. Personal & Contact Information'}</span>
+              </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
               <div>
@@ -287,10 +289,11 @@ export const FarmerAccountModal: React.FC<FarmerAccountModalProps> = ({ isOpen, 
                   : 'Your account is linked to cryptographic bank escrow. Advance funds are automatically disbursed upon verified sowing.'}
               </span>
             </div>
+            </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end space-x-3">
+          {/* Fixed Footer Actions - shrink-0 */}
+          <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end space-x-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
@@ -300,7 +303,7 @@ export const FarmerAccountModal: React.FC<FarmerAccountModalProps> = ({ isOpen, 
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm flex items-center space-x-1.5"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm flex items-center space-x-1.5"
             >
               {isSaved ? (
                 <>
