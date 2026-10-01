@@ -18,7 +18,7 @@ import {
   INITIAL_DEMAND_POOLS, 
   RAVI_SINGH_REPUTATION 
 } from '../services/seedData';
-import { DARK_STORE_HUBS, evaluateLogisticsFeasibility } from '../services/logistics';
+import { DARK_STORE_HUBS, evaluateLogisticsFeasibility, INDIAN_CITIES } from '../services/logistics';
 import { 
   INITIAL_TRANSACTIONS, 
   INITIAL_BLOCKS, 
@@ -31,6 +31,11 @@ interface ToastState {
   message: string;
   type: 'success' | 'info' | 'warning' | 'error';
 }
+
+const STORAGE_KEY_LISTINGS = 'demand2crop_listings_v3';
+const STORAGE_KEY_ORDERS = 'demand2crop_orders_v3';
+const STORAGE_KEY_TXS = 'demand2crop_txs_v3';
+const STORAGE_KEY_BLOCKS = 'demand2crop_blocks_v3';
 
 interface AppContextType {
   // Navigation & Role
@@ -92,16 +97,112 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeView, setActiveView] = useState<AppView>('landing');
   const [buyerCity, setBuyerCity] = useState<string>('Delhi');
 
-  const [listings, setListings] = useState<HarvestListing[]>(INITIAL_LISTINGS);
-  const [orders, setOrders] = useState<UserOrder[]>(INITIAL_ORDERS);
+  const [listings, setListings] = useState<HarvestListing[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_LISTINGS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return INITIAL_LISTINGS;
+  });
+
+  const [orders, setOrders] = useState<UserOrder[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_ORDERS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return INITIAL_ORDERS;
+  });
+
   const [demandPools, setDemandPools] = useState<DemandPool[]>(INITIAL_DEMAND_POOLS);
   const [darkStores, setDarkStores] = useState<DarkStoreHub[]>(DARK_STORE_HUBS);
-  const [transactions, setTransactions] = useState<LedgerTransaction[]>(INITIAL_TRANSACTIONS);
-  const [blocks, setBlocks] = useState<LedgerBlock[]>(INITIAL_BLOCKS);
+
+  const [transactions, setTransactions] = useState<LedgerTransaction[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_TXS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return INITIAL_TRANSACTIONS;
+  });
+
+  const [blocks, setBlocks] = useState<LedgerBlock[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_BLOCKS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return INITIAL_BLOCKS;
+  });
+
   const [farmerReputation] = useState(RAVI_SINGH_REPUTATION);
 
   const [selectedListing, setSelectedListing] = useState<HarvestListing | null>(INITIAL_LISTINGS[0]);
   const [selectedOrder, setSelectedOrder] = useState<UserOrder | null>(INITIAL_ORDERS[0]);
+
+  // Persist updates to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(listings));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [listings]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [orders]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_TXS, JSON.stringify(transactions));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_BLOCKS, JSON.stringify(blocks));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [blocks]);
+
+  // Real-time synchronization across browser tabs (e.g. Farmer in Tab 1, Buyer in Tab 2)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY_LISTINGS && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setListings(parsed);
+        } catch {}
+      }
+      if (e.key === STORAGE_KEY_ORDERS && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setOrders(parsed);
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Guided demo tour
   const [demoStep, setDemoStep] = useState<number>(1);
@@ -150,15 +251,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const txHash = generateTxHash('DEPLOY_CONTRACT');
     const newBlockNum = blocks[0].blockNumber + 1;
 
+    const locationInput = (data.farmerLocation || 'Ludhiana').trim();
+    const matchedCityKey = Object.keys(INDIAN_CITIES).find((c) =>
+      locationInput.toLowerCase().includes(c.toLowerCase())
+    );
+    const derivedState = matchedCityKey ? INDIAN_CITIES[matchedCityKey].state : (data.farmerState || 'Punjab');
+    const derivedCoords: [number, number] = matchedCityKey 
+      ? [INDIAN_CITIES[matchedCityKey].lat, INDIAN_CITIES[matchedCityKey].lng] 
+      : [30.9010, 75.8573];
+
     const newListing: HarvestListing = {
       id: `listing-${Date.now()}`,
       contractId,
       contractAddress,
       farmerId: 'farmer-ravi-singh',
       farmerName: 'Ravi Singh',
-      farmerLocation: data.farmerLocation || 'Ludhiana',
-      farmerState: 'Punjab',
-      coordinates: [30.9010, 75.8573],
+      farmerLocation: locationInput,
+      farmerState: derivedState,
+      coordinates: derivedCoords,
       crop: (data.crop as CropType) || 'Wheat',
       variety: data.variety || 'Certified Variety',
       expectedQuantityKg: data.expectedQuantityKg || 1000,
@@ -208,7 +318,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setTransactions((prev) => [newTx, ...prev]);
     setBlocks((prev) => [newBlock, ...prev]);
-    showToast(`Harvest Contract ${contractId} deployed to Distributed Ledger!`, 'success');
+    showToast(`🌾 Harvest for ${newListing.crop} listed! Live on Buyer Marketplace.`, 'success');
 
     return newListing;
   };
@@ -663,6 +773,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 7. Reset demo data
   const resetDemoData = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY_LISTINGS);
+      localStorage.removeItem(STORAGE_KEY_ORDERS);
+      localStorage.removeItem(STORAGE_KEY_TXS);
+      localStorage.removeItem(STORAGE_KEY_BLOCKS);
+    } catch {}
     setListings(INITIAL_LISTINGS);
     setOrders(INITIAL_ORDERS);
     setDemandPools(INITIAL_DEMAND_POOLS);
@@ -670,7 +786,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTransactions(INITIAL_TRANSACTIONS);
     setBlocks(INITIAL_BLOCKS);
     setDemoStep(1);
-    showToast('Demo data reset to initial benchmark state!', 'info');
+    showToast('Platform data reset to benchmark initial state!', 'info');
   };
 
   const advanceDemoTour = () => {

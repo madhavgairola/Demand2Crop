@@ -10,6 +10,7 @@ import {
 import { useApp } from '../../context/AppContext';
 import { HarvestListing } from '../../types';
 import { evaluateLogisticsFeasibility } from '../../services/logistics';
+import { CROP_METADATA_REGISTRY } from '../../services/cropMetadata';
 import { CommitmentTxModal } from '../checkout/CommitmentTxModal';
 
 export const Marketplace: React.FC = () => {
@@ -18,7 +19,7 @@ export const Marketplace: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCropCategory, setSelectedCropCategory] = useState<string>('ALL');
   const [selectedLocation, setSelectedLocation] = useState<string>('ALL');
-  const [sortBy, setSortBy] = useState<'committed' | 'price' | 'date'>('committed');
+  const [sortBy, setSortBy] = useState<'newest' | 'committed' | 'price' | 'date'>('newest');
 
   const [activeModalListing, setActiveModalListing] = useState<HarvestListing | null>(null);
 
@@ -32,18 +33,30 @@ export const Marketplace: React.FC = () => {
 
     const matchesCategory =
       selectedCropCategory === 'ALL' ||
-      (selectedCropCategory === 'GRAINS' && ['Wheat', 'Basmati Rice', 'Soybean', 'Pulses (Arhar)'].includes(listing.crop)) ||
+      (selectedCropCategory === 'GRAINS' && ['Wheat', 'Basmati Rice', 'Soybean', 'Pulses (Arhar)', 'Mustard Seed'].includes(listing.crop)) ||
       (selectedCropCategory === 'VEGETABLES' && ['Tomatoes', 'Potatoes', 'Onions', 'Green Chillies'].includes(listing.crop)) ||
-      (selectedCropCategory === 'FRUITS' && ['Apples', 'Strawberries'].includes(listing.crop));
+      (selectedCropCategory === 'FRUITS' && ['Apples', 'Strawberries'].includes(listing.crop)) ||
+      (selectedCropCategory === 'COMMODITIES' && ['Cotton', 'Mustard Seed', 'Soybean'].includes(listing.crop));
 
     const matchesLocation =
-      selectedLocation === 'ALL' || listing.farmerState.toLowerCase().includes(selectedLocation.toLowerCase());
+      selectedLocation === 'ALL' || 
+      listing.farmerState.toLowerCase().includes(selectedLocation.toLowerCase()) ||
+      listing.farmerLocation.toLowerCase().includes(selectedLocation.toLowerCase());
 
     return matchesSearch && matchesCategory && matchesLocation;
   });
 
   // Sort listings
   filteredListings.sort((a, b) => {
+    if (sortBy === 'newest') {
+      const timeA = a.id.startsWith('listing-') && !isNaN(Number(a.id.replace('listing-', '')))
+        ? Number(a.id.replace('listing-', ''))
+        : new Date(a.createdAt || a.expectedHarvestDate).getTime();
+      const timeB = b.id.startsWith('listing-') && !isNaN(Number(b.id.replace('listing-', '')))
+        ? Number(b.id.replace('listing-', ''))
+        : new Date(b.createdAt || b.expectedHarvestDate).getTime();
+      return timeB - timeA;
+    }
     if (sortBy === 'committed') {
       const pctA = a.committedQuantityKg / a.expectedQuantityKg;
       const pctB = b.committedQuantityKg / b.expectedQuantityKg;
@@ -113,6 +126,7 @@ export const Marketplace: React.FC = () => {
             <option value="GRAINS">Grains & Pulses</option>
             <option value="VEGETABLES">Fresh Vegetables</option>
             <option value="FRUITS">Orchard Fruits</option>
+            <option value="COMMODITIES">Commodities & Cash Crops</option>
           </select>
 
           {/* State Filter */}
@@ -139,6 +153,7 @@ export const Marketplace: React.FC = () => {
               onChange={(e) => setSortBy(e.target.value as any)}
               className="bg-transparent text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer w-full"
             >
+              <option value="newest" className="bg-white dark:bg-slate-900">Newest Forward Listings</option>
               <option value="committed" className="bg-white dark:bg-slate-900">Highest Committed %</option>
               <option value="price" className="bg-white dark:bg-slate-900">Price: Low to High</option>
               <option value="date" className="bg-white dark:bg-slate-900">Earliest Harvest Date</option>
@@ -176,20 +191,19 @@ export const Marketplace: React.FC = () => {
                 <div className="p-5 pb-3 flex items-start justify-between">
                   <div className="flex items-start space-x-3">
                     <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-2xl shrink-0">
-                      {listing.crop === 'Wheat' ? '🌾' :
-                       listing.crop === 'Tomatoes' ? '🍅' :
-                       listing.crop === 'Potatoes' ? '🥔' :
-                       listing.crop === 'Basmati Rice' ? '🍚' :
-                       listing.crop === 'Apples' ? '🍎' :
-                       listing.crop === 'Onions' ? '🧅' :
-                       listing.crop === 'Strawberries' ? '🍓' : '🌱'}
+                      {CROP_METADATA_REGISTRY[listing.crop]?.icon || '🌱'}
                     </div>
                     <div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1.5 flex-wrap">
                         <h4 className="text-base font-bold text-slate-900 dark:text-white">{listing.crop}</h4>
                         {isRaviListing && (
                           <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-300 dark:border-emerald-700/50 uppercase">
                             Featured
+                          </span>
+                        )}
+                        {listing.committedQuantityKg === 0 && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 border border-teal-300 dark:bg-teal-900/60 dark:text-teal-300 uppercase">
+                            New Listing
                           </span>
                         )}
                       </div>

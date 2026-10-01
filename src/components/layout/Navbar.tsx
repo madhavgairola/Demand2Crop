@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-slate-500 dark:text-slate-400 font-medium">Active Session:</span>
             <span className="text-slate-800 dark:text-slate-200 font-semibold font-mono">
-              {activeRole === 'FARMER' ? 'Sovereign Producer' : activeRole === 'BUYER' ? `Buyer (${buyerCity})` : 'Protocol Admin'}
+              {activeRole === 'FARMER' ? 'Ravi Singh (Farmer)' : activeRole === 'BUYER' ? `Buyer (${buyerCity})` : 'Protocol Admin'}
             </span>
           </div>
 
@@ -131,14 +131,14 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="flex items-center space-x-1 sm:space-x-3 border-t border-slate-200 dark:border-slate-800/80 py-2 overflow-x-auto text-xs scrollbar-none">
+        <div className="flex items-center justify-center space-x-1 sm:space-x-3 border-t border-slate-200 dark:border-slate-800/80 py-2 overflow-x-auto text-xs scrollbar-none">
           {activeRole === 'FARMER' && (
             <>
-              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label="Farmer Dashboard" />
-              <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label="Demand Aggregation Pools" />
-              <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label="Harvest Contract (#HC-48291)" />
-              <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label="Dark Store Silos" />
-              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label="Ledger Explorer" />
+              <TabButton active={activeView === 'farmer'} onClick={() => setActiveView('farmer')} icon={<Sprout className="w-3.5 h-3.5" />} label="My Farm Dashboard" />
+              <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label="Buyer Demand" />
+              <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label="Crop Agreement" />
+              <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label="Storage Godowns" />
+              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label="Payment & Bank Records" />
             </>
           )}
 

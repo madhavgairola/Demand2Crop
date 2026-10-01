@@ -123,10 +123,21 @@ export const DARK_STORE_HUBS: DarkStoreHub[] = [
 
 // Great circle distance in KM with road curvature multiplier
 export function calculateRoadDistanceKm(originCity: string, destinationCity: string): number {
-  const c1 = INDIAN_CITIES[originCity] || INDIAN_CITIES['Ludhiana'];
-  const c2 = INDIAN_CITIES[destinationCity] || INDIAN_CITIES['Delhi'];
+  const getCityCoord = (inputCity: string, fallbackKey: string) => {
+    if (!inputCity) return INDIAN_CITIES[fallbackKey];
+    if (INDIAN_CITIES[inputCity]) return INDIAN_CITIES[inputCity];
+    const cleaned = inputCity.split(',')[0].trim().toLowerCase();
+    const foundKey = Object.keys(INDIAN_CITIES).find((k) => {
+      const kLower = k.toLowerCase();
+      return kLower === cleaned || cleaned.includes(kLower) || kLower.includes(cleaned);
+    });
+    return foundKey ? INDIAN_CITIES[foundKey] : INDIAN_CITIES[fallbackKey];
+  };
 
-  if (originCity === destinationCity) return 25; // Intra-city local transit
+  const c1 = getCityCoord(originCity, 'Ludhiana');
+  const c2 = getCityCoord(destinationCity, 'Delhi');
+
+  if (c1.name === c2.name) return 25; // Intra-city local transit
 
   const R = 6371; // km
   const dLat = ((c2.lat - c1.lat) * Math.PI) / 180;
@@ -163,7 +174,7 @@ export function evaluateLogisticsFeasibility(
   buyerCity: string,
   quantityKg: number
 ): RouteFeasibilityResult {
-  const cropMeta = CROP_METADATA_REGISTRY[cropName];
+  const cropMeta = CROP_METADATA_REGISTRY[cropName] || CROP_METADATA_REGISTRY['Wheat'];
   const distanceKm = calculateRoadDistanceKm(farmerCity, buyerCity);
   
   // Average freight transit speed: 45 km/h + 6 hrs dark store handling buffer

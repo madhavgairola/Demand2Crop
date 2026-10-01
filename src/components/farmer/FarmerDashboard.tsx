@@ -63,23 +63,41 @@ const STAGE_ICONS: Record<LifecycleStage, string> = {
 const CROP_ICONS: Record<string, string> = {
   Wheat: '🌾',
   Rice: '🍚',
+  'Basmati Rice': '🍚',
   Mustard: '🌼',
+  'Mustard Seed': '🌼',
   Tomato: '🍅',
+  Tomatoes: '🍅',
   Onion: '🧅',
+  Onions: '🧅',
   Potato: '🥔',
+  Potatoes: '🥔',
   Cotton: '🌿',
-  Soybean: '🌱'
+  Soybean: '🌱',
+  Apples: '🍎',
+  Strawberries: '🍓',
+  'Green Chillies': '🌶️',
+  'Pulses (Arhar)': '🫘'
 };
 
 const CROP_HINDI_NAMES: Record<string, string> = {
   Wheat: 'गेहूं',
   Rice: 'बासमती चावल',
+  'Basmati Rice': 'बासमती चावल',
   Mustard: 'सरसों',
+  'Mustard Seed': 'सरसों',
   Tomato: 'टमाटर',
+  Tomatoes: 'टमाटर',
   Onion: 'प्याज',
+  Onions: 'प्याज',
   Potato: 'आलू',
+  Potatoes: 'आलू',
   Cotton: 'कपास',
-  Soybean: 'सोयाबीन'
+  Soybean: 'सोयाबीन',
+  Apples: 'सेब',
+  Strawberries: 'स्ट्रॉबेरी',
+  'Green Chillies': 'हरी मिर्च',
+  'Pulses (Arhar)': 'अरहर दाल'
 };
 
 export const FarmerDashboard: React.FC = () => {
@@ -252,7 +270,7 @@ export const FarmerDashboard: React.FC = () => {
         <div className="p-5 md:p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-start space-x-3.5">
             <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 flex items-center justify-center text-2xl border border-amber-300 dark:border-amber-500/30 shrink-0">
-              🌾
+              {CROP_ICONS[primaryListing.crop] || '🌱'}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
