@@ -49,21 +49,6 @@ const STAGE_ORDER: LifecycleStage[] = [
   'SETTLED'
 ];
 
-const STAGE_ICONS: Record<LifecycleStage, string> = {
-  DEMAND_POSTED: '📋',
-  FARMER_COMMITTED: '🤝',
-  CULTIVATION: '🌱',
-  GROWING: '🌿',
-  HARVEST_READY: '🌾',
-  HARVESTED: '🚜',
-  QUALITY_VERIFIED: '🔬',
-  IN_TRANSIT: '🚚',
-  AT_DARK_STORE: '🏬',
-  OUT_FOR_DELIVERY: '🛵',
-  DELIVERED: '📦',
-  SETTLED: '💰'
-};
-
 const CROP_ICONS: Record<string, string> = {
   Wheat: '🌾',
   Rice: '🍚',
@@ -315,7 +300,7 @@ export const FarmerDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 5. 6 Key Metrics Cards (Clear, Visual, Icon-Rich) */}
+        {/* 5. 6 Key Metrics Cards (Clean, Minimal, No Subtext) */}
         <div className="p-5 md:p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/40">
           {/* 1. Total Target */}
           <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
@@ -326,7 +311,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
               {primaryListing.expectedQuantityKg.toLocaleString()} kg
             </div>
-            <span className="text-[11px] text-slate-500">{t.totalQuantitySub}</span>
           </div>
 
           {/* 2. Committed Demand */}
@@ -338,9 +322,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400">
               {primaryListing.committedQuantityKg.toLocaleString()} kg
             </div>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-500 font-semibold">
-              {committedPct}% {t.committedDemandSub}
-            </span>
           </div>
 
           {/* 3. Remaining Available */}
@@ -352,7 +333,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-amber-700 dark:text-amber-400">
               {remainingKg.toLocaleString()} kg
             </div>
-            <span className="text-[11px] text-slate-500">{t.remainingAvailableSub}</span>
           </div>
 
           {/* 4. Guaranteed Rate */}
@@ -364,7 +344,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400">
               ₹{primaryListing.pricePerKg}/kg
             </div>
-            <span className="text-[11px] text-slate-500">{t.guaranteedPriceSub}</span>
           </div>
 
           {/* 5. Committed Buyers */}
@@ -376,7 +355,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
               {primaryListing.commitmentsCount} {lang === 'hi' ? 'खरीदार' : 'buyers'}
             </div>
-            <span className="text-[11px] text-slate-500">{t.activeBuyersSub}</span>
           </div>
 
           {/* 6. Expected Revenue */}
@@ -388,7 +366,6 @@ export const FarmerDashboard: React.FC = () => {
             <div className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400">
               ₹{totalRevenue.toLocaleString()}
             </div>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-500 font-semibold">{t.expectedRevenueSub}</span>
           </div>
         </div>
 
@@ -511,8 +488,6 @@ export const FarmerDashboard: React.FC = () => {
                 const stepInfo = stageTranslations[stageKey][lang];
                 const isPassed = actualIdx <= currentStageIndex;
                 const isCurrent = actualIdx === currentStageIndex;
-                const stageIcon = STAGE_ICONS[stageKey];
-
                 return (
                   <div
                     key={stageKey}
@@ -529,15 +504,9 @@ export const FarmerDashboard: React.FC = () => {
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xl">{stageIcon}</span>
                         <span className="text-[10px] font-mono font-semibold uppercase text-slate-500 dark:text-slate-400">
                           {t.phaseLabel} {actualIdx + 1}
                         </span>
-                        {isPassed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                        ) : (
-                          <div className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-                        )}
                       </div>
                       <div className={`text-xs font-bold leading-tight ${isCurrent ? 'text-emerald-800 dark:text-emerald-300' : isPassed ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
                         {stepInfo.label}
