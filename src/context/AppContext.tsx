@@ -33,58 +33,6 @@ interface ToastState {
   type: 'success' | 'info' | 'warning' | 'error';
 }
 
-export interface NodeLog {
-  id: string;
-  timestamp: string;
-  type: 'rpc' | 'mining' | 'event' | 'info';
-  message: string;
-}
-
-const INITIAL_NODE_LOGS: NodeLog[] = [
-  {
-    id: 'log-1',
-    timestamp: '09:14:22',
-    type: 'info',
-    message: 'Polygon Amoy JSON-RPC Node started at ws://127.0.0.1:8546 (Chain ID: 80002)'
-  },
-  {
-    id: 'log-2',
-    timestamp: '09:14:23',
-    type: 'rpc',
-    message: 'eth_chainId -> 0x13882 (Polygon Amoy PoS Testnet)'
-  },
-  {
-    id: 'log-3',
-    timestamp: '09:14:24',
-    type: 'mining',
-    message: 'Block #104292 verified by Validator-Node-Punjab-Agri-01 (100% finality)'
-  },
-  {
-    id: 'log-4',
-    timestamp: '09:14:25',
-    type: 'event',
-    message: 'Contract Deployed: HarvestEscrow (#HC-48291) at 0x88912e7bb014389012a6cb82e99f018349071241'
-  },
-  {
-    id: 'log-5',
-    timestamp: '11:32:05',
-    type: 'rpc',
-    message: 'eth_sendRawTransaction: lockEscrowDeposit(300 kg, ₹3,250)'
-  },
-  {
-    id: 'log-6',
-    timestamp: '11:32:06',
-    type: 'mining',
-    message: 'Mined in Block #104293 (Tx: 0x8b22a0149021... Gas: 88,400)'
-  },
-  {
-    id: 'log-7',
-    timestamp: '11:32:06',
-    type: 'event',
-    message: 'Event: BuyerPreCommitted(buyer: 0x71a481..., escrowLocked: 3250 INR)'
-  }
-];
-
 export interface FarmerProfile {
   name: string;
   phone: string;
@@ -211,69 +159,13 @@ interface AppContextType {
   contributeToDemandPool: (poolId: string, quantityKg: number, farmerName: string) => void;
   resetDemoData: () => void;
 
-  // Web3 / Blockchain Test Mode (/test)
-  isWeb3Mode: boolean;
-  setIsWeb3Mode: (val: boolean) => void;
-  nodeLogs: NodeLog[];
-  addNodeLog: (log: { type: 'rpc' | 'mining' | 'event' | 'info'; message: string }) => void;
-  clearNodeLogs: () => void;
-  mineTestBlock: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Helper to check if current URL indicates /test route
-export const checkIsWeb3Path = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  const path = window.location.pathname.toLowerCase();
-  const hash = window.location.hash.toLowerCase();
-  const search = window.location.search.toLowerCase();
-  return path.startsWith('/test') || hash.includes('test') || search.includes('test');
-};
-
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isWeb3Mode, setIsWeb3ModeState] = useState<boolean>(() => checkIsWeb3Path());
-  const [nodeLogs, setNodeLogs] = useState<NodeLog[]>(INITIAL_NODE_LOGS);
-
-  const setIsWeb3Mode = (val: boolean) => {
-    setIsWeb3ModeState(val);
-    if (typeof window !== 'undefined') {
-      if (val) {
-        if (!window.location.pathname.startsWith('/test')) {
-          window.history.pushState(null, '', '/test');
-        }
-      } else {
-        if (window.location.pathname.startsWith('/test')) {
-          window.history.pushState(null, '', '/');
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    const handlePopState = () => {
-      setIsWeb3ModeState(checkIsWeb3Path());
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  const addNodeLog = (log: { type: 'rpc' | 'mining' | 'event' | 'info'; message: string }) => {
-    const newEntry: NodeLog = {
-      id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-      type: log.type,
-      message: log.message
-    };
-    setNodeLogs((prev) => [...prev, newEntry]);
-  };
-
-  const clearNodeLogs = () => {
-    setNodeLogs([]);
-  };
-
   const [activeRole, setActiveRoleState] = useState<UserRole>('FARMER');
-  const [activeView, setActiveView] = useState<AppView>(() => checkIsWeb3Path() ? 'farmer' : 'landing');
+  const [activeView, setActiveView] = useState<AppView>('landing');
   const [buyerCity, setBuyerCity] = useState<string>('Delhi');
 
   const [listings, setListings] = useState<HarvestListing[]>(() => {
@@ -576,19 +468,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTransactions((prev) => [newTx, ...prev]);
     setBlocks((prev) => [newBlock, ...prev]);
 
-    addNodeLog({
-      type: 'rpc',
-      message: `eth_sendRawTransaction: deployHarvestEscrow("${newListing.crop}", ${newListing.expectedQuantityKg}kg, ₹${newListing.pricePerKg}/kg)`
-    });
-    addNodeLog({
-      type: 'mining',
-      message: `Block #${newBlockNum} mined with Tx ${txHash.slice(0, 18)}... (Gas Used: 154,200)`
-    });
-    addNodeLog({
-      type: 'event',
-      message: `HarvestEscrow.HarvestCreated(contract: ${contractAddress.slice(0, 14)}..., id: "${contractId}")`
-    });
-
     showToast(`🌾 Harvest for ${newListing.crop} listed! Live on Buyer Marketplace.`, 'success');
 
     return newListing;
@@ -765,19 +644,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTransactions((prev) => [newTx, ...prev]);
     setBlocks((prev) => [newBlock, ...prev]);
 
-    addNodeLog({
-      type: 'rpc',
-      message: `eth_sendRawTransaction: lockEscrowDeposit("${listing.contractId}", ${quantityKg}kg, ₹${totalAmount})`
-    });
-    addNodeLog({
-      type: 'mining',
-      message: `Block #${newBlockNum} mined with Tx ${txHash.slice(0, 18)}... (Gas Used: 89,400)`
-    });
-    addNodeLog({
-      type: 'event',
-      message: `HarvestEscrow.BuyerPreCommitted(buyer: 0x71a481..., escrowLocked: ₹${totalAmount.toLocaleString()})`
-    });
-
     return { order: newOrder, txHash, contractId: listing.contractId };
   };
 
@@ -937,19 +803,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setTransactions((prev) => [newTx, ...prev]);
 
-    addNodeLog({
-      type: 'rpc',
-      message: `eth_sendRawTransaction: advanceListingStage("${listingId}", "${nextStage}")`
-    });
-    addNodeLog({
-      type: 'mining',
-      message: `Block #${blocks[0].blockNumber + 1} mined (Tx: ${txHash.slice(0, 18)}... Gas: 48,000)`
-    });
-    addNodeLog({
-      type: 'event',
-      message: `Event: HarvestEscrow.StageAdvanced(stage: "${nextStage}")`
-    });
-
     showToast(`Harvest stage updated to: ${nextStage}`, 'info');
   };
 
@@ -1095,43 +948,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setDemoStep((prev) => (prev >= 10 ? 1 : prev + 1));
   };
 
-  const mineTestBlock = () => {
-    const newBlockNum = (blocks[0]?.blockNumber || 104293) + 1;
-    const txHash = generateTxHash('CONSENSUS_STAMP');
-    const newTx: LedgerTransaction = {
-      txHash,
-      blockNumber: newBlockNum,
-      timestamp: new Date().toLocaleString(),
-      type: 'STAGE_TRANSITION',
-      from: '0x3a4b928198f12a6b4129e81b9e28f1b92019481a',
-      to: '0x88912e7bb014389012a6cb82e99f018349071241',
-      contractRef: '#HC-48291',
-      status: 'CONFIRMED',
-      gasUsed: 38200,
-      details: `Oracle Consensus Stamp verified by 12 multi-sig validator nodes`
-    };
-
-    const newBlock: LedgerBlock = {
-      blockNumber: newBlockNum,
-      blockHash: generateTxHash('BLOCK'),
-      previousHash: blocks[0]?.blockHash || '0x0000a891f732489a012c8b74910283f9812acb92014890281b9e812a6b41298f',
-      timestamp: new Date().toLocaleString(),
-      transactionsCount: 1,
-      validator: 'Validator-Node-Amoy-PoS-01',
-      nonce: Math.floor(Math.random() * 900000)
-    };
-
-    setTransactions((prev) => [newTx, ...prev]);
-    setBlocks((prev) => [newBlock, ...prev]);
-
-    addNodeLog({
-      type: 'mining',
-      message: `Block #${newBlockNum} mined by Validator-Node-Amoy-PoS-01 (Hash: ${newBlock.blockHash.slice(0, 18)}...)`
-    });
-
-    showToast(`⚡ Block #${newBlockNum} mined on Polygon Amoy!`, 'success');
-  };
-
   return (
     <AppContext.Provider
       value={{
@@ -1173,13 +989,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         advanceListingStage,
         simulatePartialFulfillment,
         contributeToDemandPool,
-        resetDemoData,
-        isWeb3Mode,
-        setIsWeb3Mode,
-        nodeLogs,
-        addNodeLog,
-        clearNodeLogs,
-        mineTestBlock
+        resetDemoData
       }}
     >
       {children}

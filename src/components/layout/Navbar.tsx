@@ -33,9 +33,7 @@ export const Navbar: React.FC = () => {
     setBuyerCity,
     resetDemoData,
     isDarkMode,
-    toggleDarkMode,
-    isWeb3Mode,
-    setIsWeb3Mode
+    toggleDarkMode
   } = useApp();
 
   return (
@@ -133,39 +131,6 @@ export const Navbar: React.FC = () => {
               </div>
             )}
 
-            {/* Web3 Network & Wallet Pill (Active in /test mode) */}
-            {isWeb3Mode ? (
-              <div className="flex items-center space-x-2 px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-300 dark:border-purple-800 text-xs shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-purple-900 dark:text-purple-300 font-mono text-[11px]">
-                  Polygon Amoy (80002)
-                </span>
-                <span className="text-purple-300 dark:text-purple-700">|</span>
-                <span className="font-mono text-slate-700 dark:text-slate-300 text-[11px]" title="Connected Wallet: 0x71a481b92019481a3a4b928198f12a6b4129e81b">
-                  0x71A4...481
-                </span>
-                <span className="text-purple-300 dark:text-purple-700 hidden sm:inline">|</span>
-                <span className="font-mono text-emerald-700 dark:text-emerald-400 font-bold text-[11px] hidden sm:inline">
-                  4.25 MATIC
-                </span>
-                <button
-                  onClick={() => setIsWeb3Mode(false)}
-                  className="ml-1 text-[10px] text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 underline font-sans"
-                  title="Switch back to standard mode"
-                >
-                  (exit)
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setIsWeb3Mode(true)}
-                className="hidden xl:flex items-center space-x-1 px-2 py-1 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 hover:border-purple-400 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 text-[10px] font-mono transition"
-                title="Switch to /test Web3 Blockchain Mode"
-              >
-                <span>/test</span>
-              </button>
-            )}
-
             {/* Dark Mode Toggle Button */}
             <button
               onClick={toggleDarkMode}
@@ -220,7 +185,7 @@ export const Navbar: React.FC = () => {
               <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'खरीदार मांग' : 'Buyer Demand'} />
               <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'फसल समझौता' : 'Crop Agreement'} />
               <TabButton active={activeView === 'darkstores'} onClick={() => setActiveView('darkstores')} icon={<Warehouse className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'गोदाम और साइलो' : 'Storage Godowns'} />
-              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label={isWeb3Mode ? 'Distributed Ledger (EVM)' : (lang === 'hi' ? 'भुगतान व बैंक रिकॉर्ड' : 'Payment & Bank Records')} />
+              <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'भुगतान व बैंक रिकॉर्ड' : 'Payment & Bank Records'} />
               <TabButton active={activeView === 'account'} onClick={() => setActiveView('account')} icon={<User className="w-3.5 h-3.5" />} label={lang === 'hi' ? 'किसान खाता' : 'Farmer Account'} />
             </>
           )}
@@ -232,9 +197,6 @@ export const Navbar: React.FC = () => {
               <TabButton active={activeView === 'logistics'} onClick={() => setActiveView('logistics')} icon={<MapPin className="w-3.5 h-3.5" />} label="Logistics & Perishability Engine" />
               <TabButton active={activeView === 'demand'} onClick={() => setActiveView('demand')} icon={<TrendingUp className="w-3.5 h-3.5" />} label="Demand Pools" />
               <TabButton active={activeView === 'contract'} onClick={() => setActiveView('contract')} icon={<FileCode2 className="w-3.5 h-3.5" />} label="Harvest Contract Inspector" />
-              {isWeb3Mode && (
-                <TabButton active={activeView === 'blockchain'} onClick={() => setActiveView('blockchain')} icon={<Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />} label="Distributed Ledger (EVM)" />
-              )}
               <TabButton active={activeView === 'account'} onClick={() => setActiveView('account')} icon={<User className="w-3.5 h-3.5" />} label="Buyer Account & Hub" />
             </>
           )}
